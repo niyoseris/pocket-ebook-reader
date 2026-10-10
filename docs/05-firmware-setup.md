@@ -1,5 +1,3 @@
-> Türkçe sürüm: [05-firmware-setup.tr.md](05-firmware-setup.tr.md)
-
 # 05 · Firmware Setup
 
 ## 1 · Requirements

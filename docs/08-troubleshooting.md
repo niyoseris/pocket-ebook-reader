@@ -1,5 +1,3 @@
-> Türkçe sürüm: [08-troubleshooting.tr.md](08-troubleshooting.tr.md)
-
 # 08 · Troubleshooting
 
 Search by symptom. In each item **the most likely cause is written first**.

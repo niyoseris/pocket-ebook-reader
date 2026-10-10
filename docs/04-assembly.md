@@ -1,5 +1,3 @@
-> Türkçe sürüm: [04-assembly.tr.md](04-assembly.tr.md)
-
 # 04 · Assembly
 
 Two parts, ordered by difficulty and risk. If you are on the easy build go to

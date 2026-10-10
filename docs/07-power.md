@@ -1,5 +1,3 @@
-> Türkçe sürüm: [07-power.tr.md](07-power.tr.md)
-
 # 07 · Power Management
 
 The entire value of an e-ink reader is "when I open it six months later, the

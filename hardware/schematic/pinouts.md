@@ -1,5 +1,3 @@
-> Türkçe sürüm: [pinouts.tr.md](pinouts.tr.md)
-
 # Pocket E-Ink Reader — Verified Pinout and Application Circuit Data
 
 > This file contains only data **verified one-to-one from official datasheets**.

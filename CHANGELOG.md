@@ -81,7 +81,7 @@ physical hardware.**
 **Documentation**
 - `docs/00`–`09`: architecture, BOM, schematic, PCB, assembly, firmware,
   books/fonts, power management, troubleshooting, roadmap
-- `README.md` (English) and `README.tr.md` (Turkish)
+- `README.md`
 
 **CI**
 - GitHub Actions: building both hardware environments, Python tests, netlist

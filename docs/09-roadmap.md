@@ -1,5 +1,3 @@
-> Türkçe sürüm: [09-roadmap.tr.md](09-roadmap.tr.md)
-
 # 09 · Roadmap and Contribution Ideas
 
 Each item is marked with **difficulty** and **impact**. The best starting point for
@@ -173,9 +171,7 @@ contribution — the `.epr` page index cache (`/cache/*.idx`) is the next candid
 
 - Firmware code with **English** identifiers and comments; user-visible strings
   English/Turkish via `i18n.h` (English by default, `-DLANG_TR` for Turkish)
-- Documentation is written in **English**; Turkish translations are kept
-  alongside as `<name>.tr.md`. Both languages get every change — a doc update
-  that only lands in one language is treated as incomplete
+- Documentation is written in **English**
 - If you make a hardware change, update `gen_netlist.py` and run
   `python3 gen_netlist.py --check` — the outputs (CSV + netlist) are generated from
   this script, not edited by hand

@@ -9,19 +9,24 @@
  * is still held (so the UI can show feedback), and releasing after a long
  * press does NOT also produce a short press.
  *
- * BTN_MENU lives on GPIO20, which is not in the RTC domain, so it can never
- * appear as a wake source -- see config.h.
+ * Note the two distinct naming spaces: BTN_UP / BTN_DOWN / BTN_MENU are the
+ * PIN macros from config.h, while EV_UP / EV_DOWN / EV_MENU are the events this
+ * module reports. They must not share names -- the preprocessor would rewrite
+ * the enum members and the file would not compile.
+ *
+ * BTN_MENU lives on GPIO20, which is not in the RTC domain, so the MENU key can
+ * never appear as a wake source -- see config.h.
  */
 
 enum ButtonEvent : uint8_t {
-    BTN_NONE = 0,
-    BTN_UP,
-    BTN_DOWN,
-    BTN_MENU,
-    BTN_MENU_LONG,
-    BTN_UP_LONG,
-    BTN_DOWN_LONG,
-    BTN_ANY_WAKE
+    EV_NONE = 0,
+    EV_UP,
+    EV_DOWN,
+    EV_MENU,
+    EV_MENU_LONG,
+    EV_UP_LONG,
+    EV_DOWN_LONG,
+    EV_ANY_WAKE
 };
 
 /* Bit indices for buttonsHeldMask(). */
@@ -34,7 +39,7 @@ enum ButtonEvent : uint8_t {
 
 void buttonsInit();
 
-/* Returns the first event that happened since the last call, or BTN_NONE.
+/* Returns the first event that happened since the last call, or EV_NONE.
  * Call it often (the main loop does) -- it is non-blocking. */
 ButtonEvent buttonsPoll();
 
@@ -43,8 +48,8 @@ ButtonEvent buttonsPoll();
 uint8_t buttonsHeldMask();
 
 /* If this boot came from a deep-sleep wake with at least one button held,
- * returns BTN_ANY_WAKE and fills `held_mask` with BTN_MASK_* bits; otherwise
- * returns BTN_NONE. This is the only way BTN_ANY_WAKE is ever produced -- it
+ * returns EV_ANY_WAKE and fills `held_mask` with BTN_MASK_* bits; otherwise
+ * returns EV_NONE. This is the only way EV_ANY_WAKE is ever produced -- it
  * cannot come out of the polling loop, because it is a property of the wake-up
  * itself, not of a button edge. */
 ButtonEvent buttonsWakeEvent(uint8_t* held_mask = nullptr);

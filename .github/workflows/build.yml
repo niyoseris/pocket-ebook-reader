@@ -73,7 +73,7 @@ jobs:
 
       - name: Generate and verify sample books
         working-directory: tools
-        run: python make_sample_books.py --outdir /tmp/ornek
+        run: python make_sample_books.py --out-dir /tmp/ornek
 
   hardware:
     name: Hardware netlist check

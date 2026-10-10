@@ -17,13 +17,13 @@ struct BtnState {
 };
 
 BtnState g_btns[3] = {
-    { BTN_UP,   false, false, false, 0, 0 },
-    { BTN_DOWN, false, false, false, 0, 0 },
-    { BTN_MENU, false, false, false, 0, 0 },
+    { EV_UP,   false, false, false, 0, 0 },
+    { EV_DOWN, false, false, false, 0, 0 },
+    { EV_MENU, false, false, false, 0, 0 },
 };
 
-const ButtonEvent kShortEvent[3] = { BTN_UP,  BTN_DOWN,  BTN_MENU };
-const ButtonEvent kLongEvent[3]  = { BTN_UP_LONG, BTN_DOWN_LONG, BTN_MENU_LONG };
+const ButtonEvent kShortEvent[3] = { EV_UP,  EV_DOWN,  EV_MENU };
+const ButtonEvent kLongEvent[3]  = { EV_UP_LONG, EV_DOWN_LONG, EV_MENU_LONG };
 
 uint16_t g_pending = 0;   /* queued events, drained by buttonsPoll() */
 
@@ -57,7 +57,7 @@ ButtonEvent buttonsWakeEvent(uint8_t* held_mask) {
 
     const esp_sleep_wakeup_cause_t cause = esp_sleep_get_wakeup_cause();
     if (cause != ESP_SLEEP_WAKEUP_EXT1 && cause != ESP_SLEEP_WAKEUP_TIMER) {
-        return BTN_NONE;                 /* ordinary power-on reset */
+        return EV_NONE;                 /* ordinary power-on reset */
     }
 
     /* Give the pads a moment to settle: the RTC pull-ups only just came back
@@ -66,7 +66,7 @@ ButtonEvent buttonsWakeEvent(uint8_t* held_mask) {
 
     const uint8_t mask = buttonsHeldMask();
     if (held_mask) *held_mask = mask;
-    return mask ? BTN_ANY_WAKE : BTN_NONE;
+    return mask ? EV_ANY_WAKE : EV_NONE;
 }
 
 uint16_t buttonsPollRaw() {
@@ -105,7 +105,7 @@ uint16_t buttonsPollRaw() {
 /* Preference order when several events are queued at once: long presses
  * first (they are deliberate), then MENU, then the page keys. */
 static const ButtonEvent kPriority[] = {
-    BTN_MENU_LONG, BTN_UP_LONG, BTN_DOWN_LONG, BTN_MENU, BTN_UP, BTN_DOWN
+    EV_MENU_LONG, EV_UP_LONG, EV_DOWN_LONG, EV_MENU, EV_UP, EV_DOWN
 };
 
 ButtonEvent buttonsPoll() {
@@ -117,19 +117,19 @@ ButtonEvent buttonsPoll() {
             return e;
         }
     }
-    return BTN_NONE;
+    return EV_NONE;
 }
 
 const char* buttonEventName(ButtonEvent e) {
     switch (e) {
-        case BTN_NONE:       return "NONE";
-        case BTN_UP:         return "UP";
-        case BTN_DOWN:       return "DOWN";
-        case BTN_MENU:       return "MENU";
-        case BTN_MENU_LONG:  return "MENU_LONG";
-        case BTN_UP_LONG:    return "UP_LONG";
-        case BTN_DOWN_LONG:  return "DOWN_LONG";
-        case BTN_ANY_WAKE:   return "ANY_WAKE";
+        case EV_NONE:       return "NONE";
+        case EV_UP:         return "UP";
+        case EV_DOWN:       return "DOWN";
+        case EV_MENU:       return "MENU";
+        case EV_MENU_LONG:  return "MENU_LONG";
+        case EV_UP_LONG:    return "UP_LONG";
+        case EV_DOWN_LONG:  return "DOWN_LONG";
+        case EV_ANY_WAKE:   return "ANY_WAKE";
         default:             return "?";
     }
 }

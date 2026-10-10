@@ -1,5 +1,3 @@
-> Türkçe sürüm: [00-overview.tr.md](00-overview.tr.md)
-
 # 00 · Overview and Design Decisions
 
 This document answers not "what did we build" but **"why did we build it this

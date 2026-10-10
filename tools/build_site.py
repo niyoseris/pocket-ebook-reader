@@ -5,12 +5,12 @@ site/template.html template.
 
 Usage:
     python3 build_site.py                 # produce both (en + tr)
-    python3 build_site.py --lang en       # English only
+    python3 build_site.py                 # build every language present
+    python3 build_site.py --lang en       # one language only
     python3 build_site.py --check         # do not build, verify
 
 Outputs:
     site/index.html      (English, canonical)
-    site/index.tr.html   (Turkish)
 
 Each output is a single file: Three.js and the four SVGs are embedded as base64
 `data:` URIs, so the page opens offline and on its own.
@@ -36,11 +36,27 @@ THREE_CACHE = CACHE_DIR / "three.min.js"
 # Three.js, downloaded once and cached during the build.
 THREE_URL = "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"
 
-# Language -> output file mapping.  English is the canonical output and keeps
-# index.html (the path READMEs link to); Turkish lives beside it as
-# index.tr.html.
-OUTPUTS: Dict[str, str] = {"en": "index.html", "tr": "index.tr.html"}
-ALL_LANGS: Tuple[str, ...] = ("tr", "en")
+# English is the canonical output and gets the plain `index.html` name; any
+# other language, if a strings.<lang>.json is present, gets `index.<lang>.html`.
+# Languages are discovered from disk, so adding one is a matter of dropping in a
+# string map -- there is no list here to keep in sync.
+PRIMARY_LANG = "en"
+
+
+def discover_langs() -> Tuple[str, ...]:
+    """Every language that has a string map on disk, primary language first."""
+    found = sorted(p.name.split(".")[1] for p in SITE_DIR.glob("strings.*.json"))
+    if not found:
+        raise SystemExit("ERROR: no site/strings.<lang>.json found")
+    if PRIMARY_LANG in found:
+        found.remove(PRIMARY_LANG)
+        found.insert(0, PRIMARY_LANG)
+    return tuple(found)
+
+
+def output_name(lang: str) -> str:
+    """The file a language is written to."""
+    return "index.html" if lang == PRIMARY_LANG else "index.%s.html" % lang
 
 # SVGs to embed (relative to the repository root).  Key: the path after
 # "../hardware/" in the template.
@@ -272,7 +288,7 @@ def size_kb(text: str) -> float:
 def run_build(langs: Tuple[str, ...]) -> int:
     """Produce the outputs, verify them and write them to disk."""
     template = read_text(TEMPLATE_PATH)
-    maps = {lang: load_strings(lang) for lang in ALL_LANGS}
+    maps = {lang: load_strings(lang) for lang in discover_langs()}
     validate_strings(template, maps)
 
     outputs = build_outputs(template, maps, langs)
@@ -280,7 +296,7 @@ def run_build(langs: Tuple[str, ...]) -> int:
         verify_self_contained(outputs[lang], lang)
 
     for lang in langs:
-        path = SITE_DIR / OUTPUTS[lang]
+        path = SITE_DIR / output_name(lang)
         path.write_text(outputs[lang], encoding="utf-8")
         print("wrote: %-22s %8.1f KB  (lang: %s)" % (path.name, size_kb(outputs[lang]), lang))
     return 0
@@ -289,16 +305,17 @@ def run_build(langs: Tuple[str, ...]) -> int:
 def run_check() -> int:
     """Does not build; runs key validation + comparison with the files on disk."""
     template = read_text(TEMPLATE_PATH)
-    maps = {lang: load_strings(lang) for lang in ALL_LANGS}
+    langs = discover_langs()
+    maps = {lang: load_strings(lang) for lang in langs}
     validate_strings(template, maps)
 
-    outputs = build_outputs(template, maps, ALL_LANGS)
-    for lang in ALL_LANGS:
+    outputs = build_outputs(template, maps, langs)
+    for lang in langs:
         verify_self_contained(outputs[lang], lang)
 
     problems: List[str] = []
-    for lang in ALL_LANGS:
-        path = SITE_DIR / OUTPUTS[lang]
+    for lang in langs:
+        path = SITE_DIR / output_name(lang)
         if not path.exists():
             problems.append("%s is missing (not built)." % path.name)
             continue
@@ -312,9 +329,9 @@ def run_check() -> int:
         )
 
     print("--check: OK. %d keys, %d languages, outputs up to date."
-          % (len(next(iter(maps.values()))), len(ALL_LANGS)))
-    for lang in ALL_LANGS:
-        print("  %-16s %8.1f KB" % (OUTPUTS[lang], size_kb(outputs[lang])))
+          % (len(next(iter(maps.values()))), len(langs)))
+    for lang in langs:
+        print("  %-16s %8.1f KB" % (output_name(lang), size_kb(outputs[lang])))
     return 0
 
 
@@ -323,7 +340,7 @@ def main(argv: List[str] | None = None) -> int:
         description="Produce single-file site outputs from the site/template.html template."
     )
     parser.add_argument(
-        "--lang", choices=list(ALL_LANGS), default=None,
+        "--lang", choices=list(discover_langs()), default=None,
         help="produce only this language (default: both).",
     )
     parser.add_argument(
@@ -337,7 +354,7 @@ def main(argv: List[str] | None = None) -> int:
             raise SystemExit("ERROR: --check and --lang cannot be used together.")
         return run_check()
 
-    langs: Tuple[str, ...] = (args.lang,) if args.lang else ALL_LANGS
+    langs: Tuple[str, ...] = (args.lang,) if args.lang else discover_langs()
     return run_build(langs)
 
 

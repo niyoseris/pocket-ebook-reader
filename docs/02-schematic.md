@@ -1,5 +1,3 @@
-> Türkçe sürüm: [02-schematic.tr.md](02-schematic.tr.md)
-
 # 02 · Schematic — Block-by-Block Description
 
 Schematic: [`hardware/schematic/pocket-reader-schematic.svg`](../hardware/schematic/pocket-reader-schematic.svg)

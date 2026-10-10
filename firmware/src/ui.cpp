@@ -792,12 +792,12 @@ void uiHandleEvent(ButtonEvent e) {
 
     switch (s_screen) {
         case SCR_LIBRARY: {
-            if (e == BTN_UP && s_lib_index > 0) { s_lib_index--; markRedraw(false); }
-            else if (e == BTN_DOWN && s_lib_index + 1 < (int)s_books.size()) {
+            if (e == EV_UP && s_lib_index > 0) { s_lib_index--; markRedraw(false); }
+            else if (e == EV_DOWN && s_lib_index + 1 < (int)s_books.size()) {
                 s_lib_index++; markRedraw(false);
-            } else if (e == BTN_MENU && !s_books.empty()) {
+            } else if (e == EV_MENU && !s_books.empty()) {
                 uiOpenBook(s_lib_index, 0);
-            } else if (e == BTN_MENU_LONG) {
+            } else if (e == EV_MENU_LONG) {
                 s_menu_index = 0;
                 s_menu_confirm_delete = false;
                 s_screen = SCR_MENU;
@@ -807,10 +807,10 @@ void uiHandleEvent(ButtonEvent e) {
         }
 
         case SCR_READER: {
-            if (e == BTN_UP && s_page > 0) { s_page--; markRedraw(false); }
-            else if (e == BTN_DOWN && s_page + 1 < s_book.pageCount()) {
+            if (e == EV_UP && s_page > 0) { s_page--; markRedraw(false); }
+            else if (e == EV_DOWN && s_page + 1 < s_book.pageCount()) {
                 s_page++; markRedraw(false);
-            } else if (e == BTN_MENU || e == BTN_MENU_LONG) {
+            } else if (e == EV_MENU || e == EV_MENU_LONG) {
                 s_menu_index = 0;
                 s_menu_confirm_delete = false;
                 s_screen = SCR_MENU;
@@ -821,20 +821,20 @@ void uiHandleEvent(ButtonEvent e) {
 
         case SCR_MENU: {
             const int rows = s_menu_confirm_delete ? 2 : (int)MI_COUNT;
-            if (e == BTN_UP) {
+            if (e == EV_UP) {
                 s_menu_index = (s_menu_index + rows - 1) % rows;
                 markRedraw(false);
-            } else if (e == BTN_DOWN) {
+            } else if (e == EV_DOWN) {
                 s_menu_index = (s_menu_index + 1) % rows;
                 markRedraw(false);
-            } else if (e == BTN_MENU || e == BTN_MENU_LONG) {
+            } else if (e == EV_MENU || e == EV_MENU_LONG) {
                 handleMenuSelect();
             }
             break;
         }
 
         case SCR_WIFI: {
-            if (e == BTN_MENU || e == BTN_MENU_LONG) {
+            if (e == EV_MENU || e == EV_MENU_LONG) {
                 s_screen = SCR_LIBRARY;
                 markRedraw(true);
             }
@@ -842,7 +842,7 @@ void uiHandleEvent(ButtonEvent e) {
         }
 
         case SCR_INFO: {
-            if (e != BTN_NONE) { s_screen = SCR_LIBRARY; markRedraw(true); }
+            if (e != EV_NONE) { s_screen = SCR_LIBRARY; markRedraw(true); }
             break;
         }
 

@@ -87,13 +87,10 @@ Show the calculation. For example, for a resistor change:
 | Where | Language |
 |---|---|
 | Identifiers, code comments, commit messages | **English** |
+| Documentation (`docs/`, `README`) | **English** |
 | User-visible firmware strings | English by default, Turkish with `-DLANG_TR`, both via `include/i18n.h` |
-| Documentation (`docs/`, `README`) | **English** — canonical, at the original path |
-| Turkish translations | `<name>.tr.md` alongside each English file |
 
-When you change a document, change both languages. A doc update that lands in
-only one language is treated as incomplete — the two are meant to be read side
-by side, and the Turkish file is not a historical archive.
+Contributions are written in English.
 
 ### Dependency policy
 

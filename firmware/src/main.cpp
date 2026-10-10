@@ -163,8 +163,8 @@ void setup() {
         /* ---- DEEP-SLEEP WAKE PATH: no splash, act immediately ---- */
         uint8_t held = 0;
         const ButtonEvent wake_ev = buttonsWakeEvent(&held);
-        if (wake_ev == BTN_ANY_WAKE) {
-            Serial.printf("[main] BTN_ANY_WAKE, gesture mask 0x%02X\n", (unsigned)held);
+        if (wake_ev == EV_ANY_WAKE) {
+            Serial.printf("[main] EV_ANY_WAKE, gesture mask 0x%02X\n", (unsigned)held);
         } else {
             Serial.println("[main] woke with no button held");
         }
@@ -247,7 +247,7 @@ void loop() {
     /* ---- buttons (drain a few events per pass so nothing is lost) ---- */
     for (int i = 0; i < 4; i++) {
         const ButtonEvent e = buttonsPoll();
-        if (e == BTN_NONE) break;
+        if (e == EV_NONE) break;
         g_last_activity = millis();
         Serial.printf("[main] event %s\n", buttonEventName(e));
         uiHandleEvent(e);

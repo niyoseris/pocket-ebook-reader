@@ -1,5 +1,3 @@
-> Türkçe sürüm: [01-bill-of-materials.tr.md](01-bill-of-materials.tr.md)
-
 # 01 · Bill of Materials (BOM)
 
 Separate lists for the two build levels. If you choose the easy build, do not

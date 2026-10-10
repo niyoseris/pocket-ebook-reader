@@ -1,5 +1,3 @@
-> Türkçe sürüm: [06-books-and-fonts.tr.md](06-books-and-fonts.tr.md)
-
 # 06 · Books and Fonts
 
 The device does not read EPUB. Books are converted once on the computer, and the

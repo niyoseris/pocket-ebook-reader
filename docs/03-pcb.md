@@ -1,5 +1,3 @@
-> Türkçe sürüm: [03-pcb.tr.md](03-pcb.tr.md)
-
 # 03 · PCB Design
 
 If you chose the easy build, skip this document. For the PCB build:

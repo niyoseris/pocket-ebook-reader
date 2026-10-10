@@ -21,7 +21,7 @@ book, turning a page and battery life are incredibly cheap.
 | `make_sample_books.py` | Generates ready-to-upload sample `.epr` files into `examples/`. | **None** |
 | `gen_placement.py` | PCB placement data — the single source all the 2D and 3D drawings are generated from. | **None** |
 | `gen_pcb_layout.py` | Generates the 2D technical drawings from `placement.csv`. | **None** |
-| `build_site.py` | Fills the `site/template.html` template with the language files and produces the single-file `site/index.html` (EN) and `site/index.tr.html` (TR). | **None** (the first build downloads Three.js) |
+| `build_site.py` | Fills the `site/template.html` template with `site/strings.en.json` and produces the single-file `site/index.html`. | **None** (the first build downloads Three.js) |
 | `tests/make_tiny_epub.py` | Writes a tiny, valid EPUB zip for the tests. | **None** |
 | `tests/test_epr_roundtrip.py` | Tests for the `.epr` format and the converter. | **None** |
 
