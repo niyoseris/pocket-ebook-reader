@@ -1,0 +1,52 @@
+# PlatformIO
+.pio/
+.pioenvs/
+.piolibdeps/
+.vscode/
+
+# Firmware data folder — fonts are not committed (licensed, and user-specific).
+# data/books/ sample books are produced by tools/make_sample_books.py
+firmware/data/fonts/*.epf
+firmware/data/fonts/*.epf.json
+firmware/data/books/*.epr
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+
+# Generated hardware outputs — reproducible from hardware/schematic/gen_netlist.py
+hardware/schematic/*.net.bak
+*.kicad_prl
+*.kicad_pcb-bak
+fp-info-cache
+*-backups/
+hardware/pcb/gerbers/
+hardware/pcb/*.gbr
+hardware/pcb/*.drl
+hardware/pcb/*.zip
+
+# 3D print outputs — generated from hardware/enclosure/case.scad
+hardware/enclosure/*.stl
+hardware/enclosure/*.gcode
+hardware/enclosure/*.3mf
+
+# Editor and OS
+.DS_Store
+Thumbs.db
+*.swp
+*~
+.idea/
+
+# PlatformIO user settings
+platformio_override.ini
+
+# Site build cache — Three.js is downloaded once at build time
+site/build-cache/
+
+# NOTE: hardware/enclosure/stl/*.stl is deliberately NOT ignored — those files
+# stay in the repository so the case can be sliced without installing OpenSCAD.
+# The rule above only filters stray STLs dropped in the folder root.

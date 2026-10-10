@@ -1,0 +1,171 @@
+Net,Class,RefDes,Pin,Description
+3V3,power,U3,VOUT,regulator output
+3V3,power,C6,1,VOUT capacitor
+3V3,power,C7,1,
+3V3,power,C8,1,
+3V3,power,C9,1,HF bypass
+3V3,power,U5,3V3,module supply (pin 3)
+3V3,power,C11,1,module decoupling
+3V3,power,C12,1,module base
+3V3,power,J2,VCI,panel logic supply (pin 16)
+3V3,power,J2,VDDIO,must be TIED TO VCI (pin 15)
+3V3,power,C13,1,VCI capacitor
+3V3,power,C14,1,VDDIO capacitor
+3V3,power,C21,1,3.3V input buffer
+3V3,power,C22,1,panel refresh buffer
+3V3,power,R9,1,RST pull-up
+3V3,power,R10,1,BUSY pull-up
+3V3,power,R13,1,
+3V3,power,R14,1,
+3V3,power,R15,1,
+GND,power,J1,GND,USB-C ground and chassis
+GND,power,U1,GND,ESD diode ground
+GND,power,R1,2,CC1 5.1k -> GND
+GND,power,R2,2,CC2 5.1k -> GND
+GND,power,C1,2,
+GND,power,C2,2,
+GND,power,U2,VSS,
+GND,power,R3,2,PROG bottom terminal
+GND,power,BT1,-,battery negative
+GND,power,SW1,COM,switch common terminal
+GND,power,U3,GND,control/logic ground
+GND,power,JP1,1,PS/SYNC power-save mode
+GND,power,C3,2,
+GND,power,C4,2,
+GND,power,C5,2,
+GND,power,C6,2,
+GND,power,C7,2,
+GND,power,C8,2,
+GND,power,C9,2,
+GND,power,R6,2,FB bottom terminal
+GND,power,U5,GND,module ground (GND + EPAD)
+GND,power,C10,2,
+GND,power,C11,2,
+GND,power,C12,2,
+GND,power,J2,GND,panel ground (pin 17)
+GND,power,C13,2,
+GND,power,C14,2,
+GND,power,C15,2,
+GND,power,C16,2,
+GND,power,C17,2,
+GND,power,C18,2,
+GND,power,C19,2,
+GND,power,C20,2,
+GND,power,C21,2,
+GND,power,C22,2,
+GND,power,J2,BS1,L = 4-wire SPI (datasheet reference circuit)
+GND,power,Q2,S,boost MOSFET source
+GND,power,C23,2,
+GND,power,C24,2,
+GND,power,R18,2,
+GND,power,SW2,B,
+GND,power,SW3,B,
+GND,power,SW4,B,
+GND,power,C25,2,
+GND,power,C26,2,
+GND,power,C27,2,
+GND,power,R17,2,divider bottom terminal
+GND,power,C28,2,
+USB_CC1,signal,J1,CC1,USB-C CC1 — UFP definition
+USB_CC1,signal,R1,1,to GND via 5.1k (SEPARATE resistor required)
+USB_CC2,signal,J1,CC2,USB-C CC2 — UFP definition
+USB_CC2,signal,R2,1,to GND via 5.1k
+VBUS,power,J1,VBUS,USB 5V
+VBUS,power,U1,VBUS,ESD diode supply
+VBUS,power,U2,VDD,charge input (pin 4)
+VBUS,power,C1,1,
+VBUS,power,R4,1,LED top terminal
+VBAT,power,U2,VBAT,charge output (pin 3)
+VBAT,power,C2,1,"VBAT bypass (min 4.7uF, required)"
+VBAT,power,BT1,+,battery positive
+VBAT_K,power,SW1,NO,switch input
+VBAT_K,power,R16,1,divider top terminal
+VBAT_SW,power,SW1,NO,switch output
+VBAT_SW,power,U3,VIN,"regulator power input (pin 10,11)"
+VBAT_SW,power,U3,VINA,regulator control input (pin 1)
+VBAT_SW,power,C3,1,
+VBAT_SW,power,C4,1,
+VBAT_SW,power,C5,1,
+VBAT_SW,power,R7,1,EN pull-up top terminal
+FB,analog,U3,FB,feedback (pin 3)
+FB,analog,R5,2,
+FB,analog,R6,1,
+LX,power,U3,L1,"inductor terminal (pin 8,9)"
+LX,power,L1,1,
+LX2,power,U3,L2,"inductor terminal (pin 6,7)"
+LX2,power,L1,2,
+EN_MCU,signal,U5,EN,module reset (pin 8)
+EN_MCU,signal,R8,1,10k pull-up
+EN_MCU,signal,C10,1,1uF RC delay
+EPD_SCK,signal,U5,GPIO4,SPI clock (pin 18)
+EPD_SCK,signal,J2,SCK,panel SCL (pin 13)
+EPD_MOSI,signal,U5,GPIO6,SPI data (pin 20)
+EPD_MOSI,signal,J2,MOSI,panel SDA (pin 14)
+EPD_CS,signal,U5,GPIO7,chip select (pin 21)
+EPD_CS,signal,J2,CS,panel CS# (pin 12)
+EPD_DC,signal,U5,GPIO10,command/data (pin 16)
+EPD_DC,signal,J2,DC,panel D/C# (pin 11)
+EPD_RST,signal,U5,GPIO8,panel reset (pin 22)
+EPD_RST,signal,J2,RST,panel RES# (pin 10)
+EPD_RST,signal,R9,2,pull-up
+EPD_BUSY,signal,U5,GPIO9,panel busy (pin 23)
+EPD_BUSY,signal,J2,BUSY,panel BUSY (pin 9)
+EPD_BUSY,signal,R10,2,pull-up
+VDD_CORE,power,J2,VDD,"core logic (pin 18) — regulated from VCI, not supplied externally"
+VDD_CORE,power,C15,1,1uF/25V
+VSH1,power,J2,VSH1,pin 20
+VSH1,power,C17,1,1uF/25V
+VSH2,power,J2,VSH2,pin 5
+VSH2,power,C16,1,1uF/25V
+VSL,power,J2,VSL,pin 22
+VSL,power,C18,1,1uF/25V
+VGL,power,J2,VGL,pin 23
+VGL,power,C19,1,1uF/25V
+VCOM,power,J2,VCOM,pin 24
+VCOM,power,C20,1,1uF/25V
+VGH,power,J2,VGH,pin 21 — external boost output
+VGH,power,D4,K,MBR0530 cathode
+GDR,signal,J2,GDR,pin 2 — MOSFET gate drive
+GDR,signal,Q2,G,Si1308EDL gate
+RESE,analog,J2,RESE,pin 3 — current-sense input
+RESE,analog,R19,1,2.2R
+BOOST_LX,power,Q2,D,MOSFET drain
+BOOST_LX,power,L2,1,47uH
+BOOST_LX,power,D2,A,Schottky anode
+VBAT_BOOST,power,L2,2,inductor supply terminal
+VBAT_BOOST,power,R18,1,1M
+VBAT_BOOST,power,C23,1,4.7uF/25V
+VBAT_BOOST,power,D2,K,Schottky cathode
+VBAT_BOOST,power,D3,A,second Schottky anode
+BOOST_AUX,power,D3,K,
+BOOST_AUX,power,C24,1,1uF/25V
+BOOST_AUX,power,R19,2,RESE bottom terminal
+BOOST_AUX,power,D4,A,VGH diode anode
+BTN_UP,signal,U5,GPIO3,page back (pin 6)
+BTN_UP,signal,SW2,A,button
+BTN_UP,signal,R13,2,pull-up
+BTN_UP,signal,C25,1,debounce
+BTN_DOWN,signal,U5,GPIO2,page forward (pin 5)
+BTN_DOWN,signal,SW3,A,button
+BTN_DOWN,signal,R14,2,pull-up
+BTN_DOWN,signal,C26,1,debounce
+BTN_MENU,signal,U5,GPIO20,"menu (pin 30, U0RXD)"
+BTN_MENU,signal,SW4,A,button
+BTN_MENU,signal,R15,2,pull-up
+BTN_MENU,signal,C27,1,debounce
+USB_DP,signal,J1,D+,USB data +
+USB_DP,signal,U1,I/O1,ESD protection
+USB_DP,signal,U5,GPIO19,USB D+ (pin 27)
+USB_DN,signal,J1,D-,USB data -
+USB_DN,signal,U1,I/O2,ESD protection
+USB_DN,signal,U5,GPIO18,USB D- (pin 26)
+VBAT_ADC,analog,R16,2,divider midpoint
+VBAT_ADC,analog,R17,1,
+VBAT_ADC,analog,C28,1,filter
+VBAT_ADC,analog,U5,GPIO5,ADC2_CH0 (pin 19)
+PROG,analog,U2,PROG,charge current setting (pin 5)
+PROG,analog,R3,1,2k -> 500mA
+STAT,signal,U2,STAT,tri-state output (pin 1)
+STAT,signal,D1,K,LED cathode
+LED_A,signal,D1,A,LED anode
+LED_A,signal,R4,2,

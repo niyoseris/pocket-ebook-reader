@@ -1,0 +1,66 @@
+"# Pocket Reader PCB placement proposal — 45.0 x 24.0 mm, origin bottom left"
+ref,value,kind,x_mm,y_mm,rot_deg,w_mm,h_mm,height_mm,side,group,note
+U5,ESP32-C3-MINI-1,module,8.3,12.0,0,16.6,13.2,2.4,top,active,The antenna tip overhangs the left edge; no copper underneath or around it
+J1,USB-C 16P,conn,24.5,3.75,0,9.0,7.5,3.2,top,active,Overhangs the edge by 0.5 mm so it seats in the case opening
+J2,FPC 24P 0.5mm,conn,31.0,20.6,0,14.0,5.5,2.0,top,active,"Bottom-contact, ZIF-latched"
+U3,TPS63020DSJR,ic,29.0,11.0,0,3.0,4.0,0.9,top,active,Hot loop: the C3/C4 input capacitors at its base
+L1,1.5uH,inductor,36.5,6.0,0,4.0,4.0,1.8,top,active,The FB trace must not run under this part
+U2,MCP73831,ic,21.5,20.5,0,3.0,3.0,1.1,top,active,Drives the STAT LED
+D1,green LED,led,27.0,16.5,0,1.6,0.8,0.6,top,active,Charge indicator
+U1,USBLC6-2SC6,ic,21.5,16.5,0,3.0,3.0,1.1,top,active,"On the D+/D- lines, close to the USB-C"
+L2,47uH,inductor,20.0,11.0,0,4.5,4.5,2.0,top,active,VGH/VGL booster
+Q2,Si1308EDL,ic,32.5,10.0,0,3.0,3.0,1.1,top,active,Drives the GDR pin
+D2,MBR0530,diode,24.5,13.0,0,2.7,1.6,1.0,top,active,
+D3,MBR0530,diode,24.5,11.0,0,2.7,1.6,1.0,top,active,
+D4,MBR0530,diode,24.5,9.0,0,2.7,1.6,1.0,top,active,
+SW2,tactile,button,42.0,17.2,0,4.5,4.5,3.5,top,active,Page back (GPIO3) — 4.5 x 4.5 mm SMD tactile
+SW3,tactile,button,42.0,12.0,0,4.5,4.5,3.5,top,active,Page forward (GPIO2)
+SW4,tactile,button,42.0,6.8,0,4.5,4.5,3.5,top,active,Menu (GPIO20)
+SW1,SPDT slide,switch,34.25,1.8,0,4.5,2.8,1.5,top,active,Accessible from the case's side face
+BT1,Li-Po 1S,battery,7.5,2.3,0,5.0,3.5,0.0,top,active,The battery wire is soldered directly (JST PH alternative)
+C3,10uF,cap,29.0,14.2,0,1.6,0.8,0.9,top,passive,around U3
+C4,10uF,cap,32.0,13.6,0,1.6,0.8,0.9,top,passive,around U3
+C5,0.1uF,cap,30.5,7.5,0,1.6,0.8,0.9,top,passive,around U3
+C6,22uF,cap,27.0,15.0,0,1.6,0.8,0.9,top,passive,around U3
+C7,22uF,cap,31.0,15.0,0,1.6,0.8,0.9,top,passive,around U3
+C8,22uF,cap,29.0,15.5,0,1.6,0.8,0.9,top,passive,around U3
+C9,0.1uF,cap,32.5,7.5,0,1.6,0.8,0.9,top,passive,around U3
+R5,1M,res,30.5,6.0,0,1.6,0.8,0.6,top,passive,around U3
+R6,180k,res,34.0,12.5,0,1.6,0.8,0.6,top,passive,around U3
+R7,100k,res,32.9,6.0,0,1.6,0.8,0.6,top,passive,around L1
+JP1,0R,jumper,36.5,9.2,0,2.0,1.25,0.6,top,passive,around L1
+C1,4.7uF,cap,18.5,23.1,0,1.6,0.8,0.9,top,passive,around U2
+C2,4.7uF,cap,17.9,20.5,0,1.6,0.8,0.9,top,passive,around U2
+R3,2k,res,18.5,17.9,0,1.6,0.8,0.6,top,passive,around U2
+R4,470R,res,21.5,23.0,0,1.6,0.8,0.6,top,passive,around U2
+R1,5.1k,res,18.5,19.1,0,1.6,0.8,0.6,top,passive,around U1
+R2,5.1k,res,17.9,16.5,0,1.6,0.8,0.6,top,passive,around U1
+C11,10uF,cap,8.5,19.5,0,1.6,0.8,0.9,top,passive,around U5
+C12,0.1uF,cap,6.5,19.5,0,1.6,0.8,0.9,top,passive,around U5
+R8,10k,res,10.5,19.5,0,1.6,0.8,0.6,top,passive,around U5
+C10,1uF,cap,11.5,4.5,0,1.6,0.8,0.9,top,passive,around U5
+R9,100k,res,31.0,17.0,0,1.6,0.8,0.6,top,passive,around J2
+R10,100k,res,29.0,17.0,0,1.6,0.8,0.6,top,passive,around J2
+C13,1uF,cap,33.0,17.0,0,1.6,0.8,0.9,top,passive,around J2
+C14,1uF,cap,35.0,17.0,0,1.6,0.8,0.9,top,passive,around J2
+C15,1uF,cap,20.0,14.2,0,1.6,0.8,0.9,top,passive,around L2
+C16,1uF,cap,18.5,8.0,0,1.6,0.8,0.9,top,passive,around L2
+C17,1uF,cap,18.0,14.0,0,1.6,0.8,0.9,top,passive,around L2
+C18,1uF,cap,18.5,6.5,0,1.6,0.8,0.9,top,passive,around L2
+C19,1uF,cap,35.5,11.0,0,1.6,0.8,0.9,top,passive,around Q2
+C20,1uF,cap,34.0,14.0,0,1.6,0.8,0.9,top,passive,around Q2
+C21,4.7uF,cap,36.0,12.5,0,1.6,0.8,0.9,top,passive,around Q2
+C22,100uF,cap,37.5,11.0,0,1.6,0.8,0.9,top,passive,around Q2
+C23,4.7uF,cap,36.0,14.0,0,1.6,0.8,0.9,top,passive,around Q2
+C24,1uF,cap,32.5,4.5,0,1.6,0.8,0.9,top,passive,around Q2
+R18,1M,res,33.0,15.5,0,1.6,0.8,0.6,top,passive,around Q2
+R19,2.2R,res,24.5,16.2,0,1.6,0.8,0.6,top,passive,around D2
+R13,100k,res,38.5,17.0,0,1.6,0.8,0.6,top,passive,around SW2
+C25,100nF,cap,38.5,15.5,0,1.6,0.8,0.9,top,passive,around SW2
+R14,100k,res,38.5,12.5,0,1.6,0.8,0.6,top,passive,around SW3
+C26,100nF,cap,38.5,14.0,0,1.6,0.8,0.9,top,passive,around SW3
+R15,100k,res,39.5,3.0,0,1.6,0.8,0.6,top,passive,around SW4
+C27,100nF,cap,39.5,1.5,0,1.6,0.8,0.9,top,passive,around SW4
+R16,100k,res,11.5,2.5,0,1.6,0.8,0.6,top,passive,around BT1
+R17,100k,res,11.5,1.0,0,1.6,0.8,0.6,top,passive,around BT1
+C28,100nF,cap,13.5,2.5,0,1.6,0.8,0.9,top,passive,around BT1

@@ -1,0 +1,16 @@
+# Pocket Reader — dependencies of the host-side tools
+#
+# Only fontgen.py needs a third-party package.
+#
+#   epub2epr.py          -> Python standard library only
+#   send.py              -> Python standard library only
+#   make_sample_books.py -> Python standard library only
+#
+# So converting a book and uploading it to the device needs NO extra package;
+# install the line below only if you want to generate your own .epf font.
+#
+# Kurulum:
+#   python3 -m venv .venv
+#   .venv/bin/pip install -r requirements.txt
+
+Pillow>=10.0

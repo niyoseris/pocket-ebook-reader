@@ -1,0 +1,112 @@
+name: build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  firmware:
+    name: Firmware build
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # Iki donanim da ayni kaynak koddan derlenmeli
+        env: [ xiao, esp32-c3-devkitm-1 ]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: PlatformIO kur
+        run: |
+          python -m pip install --upgrade pip
+          pip install platformio
+
+      - name: Cache PlatformIO packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.platformio
+          key: pio-${{ runner.os }}-${{ hashFiles('firmware/platformio.ini') }}
+          restore-keys: pio-${{ runner.os }}-
+
+      - name: Build (${{ matrix.env }})
+        working-directory: firmware
+        run: pio run -e ${{ matrix.env }}
+
+      - name: Report memory usage
+        working-directory: firmware
+        run: pio run -e ${{ matrix.env }} -t size || true
+
+      - name: Firmware size
+        working-directory: firmware
+        run: |
+          ls -la .pio/build/${{ matrix.env }}/firmware.bin 2>/dev/null || true
+
+  tools:
+    name: Tools (Python)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Pillow (fontgen only)
+        run: pip install -r tools/requirements.txt
+
+      - name: Syntax check
+        run: |
+          for f in tools/*.py; do
+            echo "-> $f"
+            python -m py_compile "$f"
+          done
+
+      - name: Tests
+        working-directory: tools
+        run: python -m unittest discover tests -v
+
+      - name: Generate and verify sample books
+        working-directory: tools
+        run: python make_sample_books.py --outdir /tmp/ornek
+
+  hardware:
+    name: Hardware netlist check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Verify netlist consistency
+        working-directory: hardware/schematic
+        run: python gen_netlist.py --check
+
+      - name: Are the generated outputs current?
+        working-directory: hardware/schematic
+        run: |
+          cp connections.csv /tmp/connections.csv.orig
+          cp pocket-reader.net /tmp/pocket-reader.net.orig
+          python gen_netlist.py > /dev/null
+          # the netlist carries a generation timestamp; ignore it
+          if ! diff -q /tmp/connections.csv.orig connections.csv > /dev/null; then
+            echo "::error::connections.csv is out of date — run 'python3 gen_netlist.py' and commit the result."
+            diff -u /tmp/connections.csv.orig connections.csv | head -40
+            exit 1
+          fi
+          echo "connections.csv is up to date."
+
+      - name: Are the SVG files valid XML?
+        run: |
+          for f in $(find hardware -name '*.svg'); do
+            python -c "import xml.etree.ElementTree as ET; ET.parse('$f')" \
+              || { echo "::error::$f is not valid XML"; exit 1; }
+            echo "OK: $f"
+          done

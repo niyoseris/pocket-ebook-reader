@@ -1,0 +1,614 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 1060" width="1440" height="1060" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+  <title>Pocket Reader — Schematic</title>
+  <desc>Complete schematic of the ESP32-C3 based e-paper reader: USB-C input, MCP73831 Li-Po charge circuit, TPS63020 3.3 V buck-boost, ESP32-C3-MINI-1, 24-pin e-paper FPC connector, buttons and battery sense divider.</desc>
+
+  <defs>
+    <style>
+      .w     { stroke: #1f2937; stroke-width: 1.5; fill: none; stroke-linecap: round; }
+      .w-pwr { stroke: #b45309; stroke-width: 2; fill: none; stroke-linecap: round; }
+      .w-bus { stroke: #334155; stroke-width: 2.6; fill: none; stroke-linecap: round; }
+      .part  { fill: #ffffff; stroke: #1f2937; stroke-width: 1.5; }
+      .partp { fill: #fffbeb; stroke: #b45309; stroke-width: 1.5; }
+      .ref   { fill: #b45309; font-size: 11px; font-weight: 700; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+      .val   { fill: #0f172a; font-size: 11.5px; }
+      .pin   { fill: #334155; font-size: 10.5px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+      .net   { fill: #1d4ed8; font-size: 11px; font-weight: 600; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+      .frame { fill: #ffffff; stroke: #94a3b8; stroke-width: 1.2; stroke-dasharray: 7 5; rx: 10; }
+      .ftitle{ fill: #334155; font-size: 11.5px; font-weight: 700; letter-spacing: .08em; }
+      .note  { fill: #64748b; font-size: 10.5px; }
+      .warn  { fill: #b91c1c; font-size: 10.5px; font-weight: 600; }
+      .big   { fill: #0f172a; font-size: 20px; font-weight: 700; }
+      .sub   { fill: #64748b; font-size: 12px; }
+    </style>
+
+    <g id="gnd">
+      <line x1="0" y1="0" x2="0" y2="9" class="w"/>
+      <line x1="-10" y1="9" x2="10" y2="9" class="w"/>
+      <line x1="-6" y1="13" x2="6" y2="13" class="w"/>
+      <line x1="-2.5" y1="17" x2="2.5" y2="17" class="w"/>
+    </g>
+
+    <!-- Horizontal resistor: left terminal (0,0), right terminal (46,0) -->
+    <g id="res-h">
+      <line x1="0" y1="0" x2="7" y2="0" class="w"/>
+      <rect x="7" y="-9" width="32" height="18" class="part"/>
+      <line x1="39" y1="0" x2="46" y2="0" class="w"/>
+    </g>
+
+    <!-- Vertical capacitor: top terminal (0,0), bottom terminal (0,20) -->
+    <g id="cap-v">
+      <line x1="0" y1="0" x2="0" y2="7" class="w"/>
+      <line x1="-10" y1="7" x2="10" y2="7" stroke="#1f2937" stroke-width="2"/>
+      <line x1="-10" y1="13" x2="10" y2="13" stroke="#1f2937" stroke-width="2"/>
+      <line x1="0" y1="13" x2="0" y2="20" class="w"/>
+    </g>
+
+    <!-- Horizontal LED, current flows right to left: anode (26,0), cathode (0,0) -->
+    <g id="led-hr">
+      <line x1="26" y1="0" x2="18" y2="0" class="w"/>
+      <path d="M 18 -9 L 6 0 L 18 9 Z" fill="#fef3c7" stroke="#1f2937" stroke-width="1.5"/>
+      <line x1="6" y1="-9" x2="6" y2="9" stroke="#1f2937" stroke-width="2"/>
+      <line x1="6" y1="0" x2="0" y2="0" class="w"/>
+      <line x1="14" y1="-12" x2="21" y2="-19" class="w" stroke-width="1.1"/>
+      <line x1="19" y1="-8" x2="26" y2="-15" class="w" stroke-width="1.1"/>
+    </g>
+
+    <!-- Push button: left (0,0) - right (44,0) -->
+    <g id="btn">
+      <line x1="0" y1="0" x2="12" y2="0" class="w"/>
+      <line x1="12" y1="0" x2="12" y2="-8" class="w"/>
+      <line x1="32" y1="0" x2="32" y2="-8" class="w"/>
+      <line x1="6" y1="-8" x2="38" y2="-8" class="w" stroke-width="2"/>
+      <line x1="22" y1="-8" x2="22" y2="-18" class="w"/>
+      <line x1="32" y1="0" x2="44" y2="0" class="w"/>
+      <circle cx="12" cy="0" r="2.4" fill="#1f2937"/>
+      <circle cx="32" cy="0" r="2.4" fill="#1f2937"/>
+    </g>
+
+    <!-- Power flag (up arrow), connection point (0,0) -->
+    <g id="pwrflag">
+      <line x1="0" y1="0" x2="0" y2="-14" class="w-pwr"/>
+      <path d="M -6 -14 L 0 -24 L 6 -14 Z" fill="#b45309"/>
+    </g>
+  </defs>
+
+  <rect width="1440" height="1060" fill="#ffffff"/>
+  <text x="30" y="42" class="big">Pocket Reader — Schematic</text>
+  <text x="30" y="64" class="sub">Rev 1.0 · ESP32-C3-MINI-1 · 2.13&quot; e-paper (SSD1680, 250×122) · 1S Li-Po · USB-C 5 V · page 1/1</text>
+
+  <!-- ============================================================ -->
+  <!-- A) USB-C INPUT AND ESD                                        -->
+  <!-- ============================================================ -->
+  <rect x="30" y="86" width="352" height="252" class="frame"/>
+  <text x="46" y="108" class="ftitle">A · USB-C INPUT AND ESD</text>
+
+  <rect x="56" y="140" width="130" height="118" class="part"/>
+  <text x="121" y="164" class="ref" text-anchor="middle">J1</text>
+  <text x="121" y="180" class="val" text-anchor="middle">USB-C 16P</text>
+  <text x="121" y="196" class="val" text-anchor="middle">(sink only)</text>
+  <text x="121" y="214" class="note" text-anchor="middle">TYPE-C-31-M-12</text>
+  <text x="121" y="230" class="note" text-anchor="middle">or equivalent</text>
+
+  <!-- VBUS -->
+  <line x1="186" y1="158" x2="300" y2="158" class="w-pwr"/>
+  <text x="192" y="152" class="pin">VBUS</text>
+  <text x="304" y="162" class="net">VBUS</text>
+  <!-- CC1 -->
+  <line x1="186" y1="186" x2="206" y2="186" class="w"/>
+  <use href="#res-h" x="206" y="186"/>
+  <line x1="252" y1="186" x2="268" y2="186" class="w"/>
+  <line x1="268" y1="186" x2="268" y2="200" class="w"/>
+  <use href="#gnd" x="268" y="200"/>
+  <text x="214" y="180" class="ref">R1</text>
+  <text x="214" y="204" class="val">5.1k</text>
+  <text x="192" y="182" class="pin">CC1</text>
+  <!-- CC2 -->
+  <line x1="186" y1="228" x2="206" y2="228" class="w"/>
+  <use href="#res-h" x="206" y="228"/>
+  <line x1="252" y1="228" x2="268" y2="228" class="w"/>
+  <line x1="268" y1="228" x2="268" y2="238" class="w"/>
+  <use href="#gnd" x="268" y="238"/>
+  <text x="214" y="222" class="ref">R2</text>
+  <text x="214" y="246" class="val">5.1k</text>
+  <text x="192" y="224" class="pin">CC2</text>
+  <circle cx="268" cy="186" r="2.6" fill="#1f2937"/>
+  <circle cx="268" cy="228" r="2.6" fill="#1f2937"/>
+  <line x1="268" y1="200" x2="268" y2="228" class="w"/>
+
+  <!-- D+/D- -->
+  <line x1="186" y1="256" x2="300" y2="256" class="w"/>
+  <text x="192" y="250" class="pin">D+</text>
+  <text x="304" y="260" class="net">USB_DP</text>
+  <line x1="186" y1="268" x2="330" y2="268" class="w"/>
+  <text x="192" y="262" class="pin">D−</text>
+  <text x="334" y="272" class="net">USB_DN</text>
+
+  <!-- ESD protection -->
+  <rect x="56" y="278" width="150" height="46" class="part"/>
+  <text x="131" y="298" class="ref" text-anchor="middle">U1</text>
+  <text x="131" y="315" class="val" text-anchor="middle">USBLC6-2SC6</text>
+
+  <text x="214" y="294" class="note">U1: in series with the D+ / D− lines</text>
+  <text x="214" y="310" class="note">ESD protection (also tied to VBUS)</text>
+  <text x="214" y="328" class="note">J1: A4/B4 VBUS · A5 CC1 · B5 CC2 · A6/B6 D+/D− · A1/B1/A12/B12 GND</text>
+
+  <!-- ============================================================ -->
+  <!-- B) Li-Po CHARGE                                                 -->
+  <!-- ============================================================ -->
+  <rect x="398" y="86" width="330" height="252" class="frame"/>
+  <text x="414" y="108" class="ftitle">B · Li-Po CHARGE (MCP73831)</text>
+
+  <rect x="470" y="150" width="150" height="118" class="part"/>
+  <text x="545" y="174" class="ref" text-anchor="middle">U2</text>
+  <text x="545" y="190" class="val" text-anchor="middle">MCP73831-2ACI/OT</text>
+  <text x="545" y="208" class="note" text-anchor="middle">SOT-23-5 · 4.20 V</text>
+  <text x="545" y="224" class="note" text-anchor="middle">VDD·VSS·VBAT</text>
+  <text x="545" y="240" class="note" text-anchor="middle">PROG·STAT</text>
+
+  <!-- VDD -->
+  <line x1="420" y1="168" x2="470" y2="168" class="w-pwr"/>
+  <text x="424" y="162" class="net">VBUS</text>
+  <text x="474" y="172" class="pin">4 VDD</text>
+  <line x1="452" y1="168" x2="452" y2="188" class="w"/>
+  <use href="#cap-v" x="452" y="188"/>
+  <use href="#gnd" x="452" y="208"/>
+  <text x="418" y="198" class="ref" text-anchor="end">C1</text>
+  <text x="418" y="212" class="val" text-anchor="end">4.7µF</text>
+  <circle cx="452" cy="168" r="2.6" fill="#1f2937"/>
+
+  <!-- PROG -->
+  <line x1="470" y1="238" x2="440" y2="238" class="w"/>
+  <text x="474" y="242" class="pin">5 PROG</text>
+  <use href="#res-h" x="394" y="238" transform="translate(0,0)"/>
+  <line x1="440" y1="238" x2="440" y2="252" class="w"/>
+  <use href="#gnd" x="440" y="252"/>
+  <text x="398" y="232" class="ref">R3</text>
+  <text x="398" y="256" class="val">2k</text>
+  <text x="414" y="272" class="note">I_charge = 1000 / R3 = 500 mA</text>
+
+  <!-- VSS -->
+  <line x1="470" y1="218" x2="452" y2="218" class="w"/>
+  <text x="474" y="222" class="pin">2 VSS</text>
+
+  <!-- STAT → D1 → R4 → VBUS -->
+  <line x1="620" y1="238" x2="620" y2="210" class="w"/>
+  <line x1="620" y1="210" x2="628" y2="210" class="w"/>
+  <text x="616" y="242" class="pin" text-anchor="end">1 STAT</text>
+  <use href="#led-hr" x="628" y="210"/>
+  <text x="600" y="200" class="ref">D1</text>
+  <text x="600" y="216" class="val">charge LED</text>
+  <line x1="654" y1="210" x2="654" y2="210" class="w"/>
+  <use href="#res-h" x="654" y="210"/>
+  <text x="658" y="204" class="ref">R4</text>
+  <text x="658" y="230" class="val">1k</text>
+  <line x1="700" y1="210" x2="700" y2="180" class="w-pwr"/>
+  <text x="704" y="176" class="net">VBUS</text>
+  <circle cx="700" cy="210" r="2.6" fill="#b45309"/>
+
+  <!-- VBAT -->
+  <line x1="620" y1="192" x2="720" y2="192" class="w-pwr"/>
+  <text x="616" y="196" class="pin" text-anchor="end">3 VBAT</text>
+  <text x="700" y="186" class="net">VBAT</text>
+  <line x1="720" y1="192" x2="720" y2="176" class="w-pwr"/>
+  <use href="#pwrflag" x="720" y="176"/>
+
+  <!-- ============================================================ -->
+  <!-- C) BATTERY                                                    -->
+  <!-- ============================================================ -->
+  <rect x="748" y="86" width="322" height="252" class="frame"/>
+  <text x="764" y="108" class="ftitle">C · BATTERY AND PROTECTION</text>
+
+  <!-- Battery symbol -->
+  <line x1="800" y1="176" x2="800" y2="150" class="w-pwr"/>
+  <use href="#pwrflag" x="800" y="150"/>
+  <text x="806" y="140" class="net">VBAT</text>
+  <line x1="786" y1="176" x2="814" y2="176" stroke="#b45309" stroke-width="2.4"/>
+  <line x1="792" y1="188" x2="808" y2="188" stroke="#b45309" stroke-width="4"/>
+  <line x1="786" y1="200" x2="814" y2="200" stroke="#b45309" stroke-width="2.4"/>
+  <line x1="792" y1="212" x2="808" y2="212" stroke="#b45309" stroke-width="4"/>
+  <line x1="800" y1="212" x2="800" y2="232" class="w"/>
+  <use href="#gnd" x="800" y="232"/>
+  <text x="822" y="182" class="ref">BT1</text>
+  <text x="822" y="196" class="val">Li-Po 1S</text>
+  <text x="822" y="210" class="val">500 mAh</text>
+  <text x="822" y="224" class="note">3.0 – 4.2 V</text>
+  <text x="822" y="238" class="note">502030 / 402025</text>
+
+  <!-- Protection -->
+  <rect x="880" y="146" width="170" height="96" class="part" stroke-dasharray="5 3"/>
+  <text x="965" y="168" class="ref" text-anchor="middle">U4 + Q1  (optional)</text>
+  <text x="965" y="184" class="val" text-anchor="middle">DW01A + FS8205A</text>
+  <text x="965" y="202" class="note" text-anchor="middle">If the cell has its own</text>
+  <text x="965" y="216" class="note" text-anchor="middle">protection board, DNP —</text>
+  <text x="965" y="230" class="note" text-anchor="middle">leave this block empty</text>
+
+  <line x1="814" y1="176" x2="880" y2="176" class="w-pwr"/>
+  <line x1="1050" y1="176" x2="1056" y2="176" class="w-pwr"/>
+  <line x1="1056" y1="176" x2="1056" y2="256" class="w-pwr"/>
+  <text x="1062" y="200" class="net">VBAT_K</text>
+
+  <!-- Switch -->
+  <rect x="900" y="256" width="120" height="56" class="part"/>
+  <text x="960" y="278" class="ref" text-anchor="middle">SW1</text>
+  <text x="960" y="294" class="val" text-anchor="middle">SPDT slide</text>
+  <text x="960" y="308" class="note" text-anchor="middle">MSK-12C02</text>
+  <line x1="1056" y1="256" x2="1020" y2="256" class="w-pwr"/>
+  <line x1="1020" y1="256" x2="1020" y2="284" class="w-pwr"/>
+  <text x="900" y="244" class="note">On/Off — between battery and regulator</text>
+  <line x1="900" y1="284" x2="866" y2="284" class="w-pwr"/>
+  <text x="830" y="288" class="net">VBAT_SW</text>
+
+  <!-- ============================================================ -->
+  <!-- D) 3.3 V BUCK-BOOST                                           -->
+  <!-- ============================================================ -->
+  <rect x="30" y="356" width="352" height="330" class="frame"/>
+  <text x="46" y="378" class="ftitle">D · 3.3 V BUCK-BOOST (TPS63020)</text>
+
+  <line x1="90" y1="410" x2="150" y2="410" class="w-pwr"/>
+  <text x="94" y="404" class="net">VBAT_SW</text>
+
+  <rect x="150" y="410" width="180" height="150" class="partp"/>
+  <text x="240" y="434" class="ref" text-anchor="middle">U3</text>
+  <text x="240" y="450" class="val" text-anchor="middle">TPS63020DSJR</text>
+  <text x="240" y="466" class="note" text-anchor="middle">VSON-14 (DSJ) · 3 × 4 mm</text>
+  <text x="240" y="488" class="note" text-anchor="middle">VIN · VINA · EN · PS/SYNC</text>
+  <text x="240" y="504" class="note" text-anchor="middle">FB · PG · L1 · L2</text>
+  <text x="240" y="520" class="note" text-anchor="middle">VOUT · PGND · GND</text>
+  <text x="240" y="542" class="note" text-anchor="middle">Vout = 0.5 V × (1 + R5/R6) = 3.28 V</text>
+
+  <!-- VIN + C2 -->
+  <line x1="150" y1="420" x2="110" y2="420" class="w-pwr"/>
+  <line x1="110" y1="410" x2="110" y2="420" class="w-pwr"/>
+  <circle cx="110" cy="410" r="2.6" fill="#b45309"/>
+  <line x1="110" y1="420" x2="110" y2="440" class="w"/>
+  <use href="#cap-v" x="110" y="440"/>
+  <use href="#gnd" x="110" y="460"/>
+  <text x="72" y="450" class="ref" text-anchor="end">C2</text>
+  <text x="72" y="464" class="val" text-anchor="end">10µF</text>
+
+  <!-- VINA + C3 -->
+  <line x1="110" y1="410" x2="90" y2="410" class="w-pwr"/>
+  <line x1="90" y1="410" x2="90" y2="490" class="w-pwr"/>
+  <line x1="90" y1="490" x2="150" y2="490" class="w-pwr"/>
+  <line x1="90" y1="490" x2="90" y2="500" class="w"/>
+  <use href="#cap-v" x="90" y="500"/>
+  <use href="#gnd" x="90" y="520"/>
+  <text x="52" y="512" class="ref" text-anchor="end">C3</text>
+  <text x="52" y="526" class="val" text-anchor="end">0.1µF</text>
+
+  <!-- EN + R7 -->
+  <line x1="150" y1="540" x2="120" y2="540" class="w"/>
+  <use href="#res-h" x="74" y="540"/>
+  <line x1="120" y1="540" x2="120" y2="540" class="w"/>
+  <line x1="74" y1="540" x2="60" y2="540" class="w"/>
+  <line x1="60" y1="540" x2="60" y2="420" class="w"/>
+  <line x1="60" y1="420" x2="110" y2="420" class="w"/>
+  <circle cx="60" cy="420" r="2.6" fill="#1f2937"/>
+  <text x="78" y="534" class="ref">R7</text>
+  <text x="78" y="558" class="val">100k</text>
+
+  <!-- PS/SYNC + JP1 -->
+  <line x1="330" y1="540" x2="352" y2="540" class="w"/>
+  <line x1="352" y1="540" x2="352" y2="556" class="w"/>
+  <use href="#gnd" x="352" y="556"/>
+  <text x="336" y="534" class="ref" text-anchor="end">JP1</text>
+  <text x="356" y="524" class="note">PS/SYNC</text>
+  <text x="356" y="552" class="note">0Ω jumper: GND =</text>
+  <text x="356" y="566" class="note">power save mode</text>
+  <text x="356" y="580" class="note">(solder to VINA =</text>
+  <text x="356" y="594" class="note">forced PWM,</text>
+  <text x="356" y="608" class="note">cleaner 3.3 V)</text>
+
+  <!-- L1 -->
+  <path d="M 330 470 q 10 -14 20 0 q 10 -14 20 0 q 10 -14 20 0" class="w" stroke-width="1.8"/>
+  <line x1="330" y1="470" x2="330" y2="470" class="w"/>
+  <line x1="390" y1="470" x2="404" y2="470" class="w"/>
+  <line x1="404" y1="470" x2="404" y2="520" class="w"/>
+  <line x1="404" y1="520" x2="330" y2="520" class="w"/>
+  <text x="352" y="452" class="ref">L1</text>
+  <text x="352" y="464" class="val">2.2µH</text>
+
+  <!-- VOUT + C4/C5/C6 + 3V3 -->
+  <line x1="330" y1="430" x2="360" y2="430" class="w-pwr"/>
+  <text x="336" y="424" class="net">3V3</text>
+  <line x1="360" y1="430" x2="360" y2="440" class="w-pwr"/>
+  <use href="#pwrflag" x="360" y="440" transform="rotate(180 360 440)"/>
+
+  <line x1="300" y1="430" x2="300" y2="440" class="w"/>
+  <use href="#cap-v" x="300" y="440"/>
+  <use href="#gnd" x="300" y="460"/>
+  <text x="286" y="450" class="ref" text-anchor="end">C4</text>
+  <text x="286" y="464" class="val" text-anchor="end">22µF</text>
+
+  <line x1="270" y1="430" x2="270" y2="600" class="w"/>
+  <use href="#cap-v" x="270" y="600"/>
+  <use href="#gnd" x="270" y="620"/>
+  <text x="256" y="610" class="ref" text-anchor="end">C5</text>
+  <text x="256" y="624" class="val" text-anchor="end">22µF</text>
+
+  <!-- FB divider R5/R6 -->
+  <line x1="330" y1="600" x2="150" y2="600" class="w"/>
+  <text x="316" y="594" class="pin" text-anchor="end">FB</text>
+  <use href="#res-h" x="150" y="600"/>
+  <line x1="196" y1="600" x2="212" y2="600" class="w"/>
+  <line x1="212" y1="600" x2="212" y2="614" class="w"/>
+  <use href="#res-h" x="166" y="614" transform="rotate(0)"/>
+  <text x="154" y="594" class="ref">R5</text>
+  <text x="154" y="618" class="val">1M</text>
+  <line x1="212" y1="614" x2="212" y2="630" class="w"/>
+  <use href="#gnd" x="212" y="630"/>
+  <text x="176" y="638" class="ref">R6</text>
+  <text x="176" y="652" class="val">180k</text>
+  <line x1="212" y1="600" x2="330" y2="600" class="w"/>
+
+  <!-- ============================================================ -->
+  <!-- E) ESP32-C3-MINI-1                                             -->
+  <!-- ============================================================ -->
+  <rect x="398" y="356" width="500" height="430" class="frame"/>
+  <text x="414" y="378" class="ftitle">E · ESP32-C3-MINI-1 (U5)</text>
+
+  <rect x="520" y="400" width="230" height="300" class="part"/>
+  <text x="635" y="426" class="ref" text-anchor="middle">U5</text>
+  <text x="635" y="444" class="val" text-anchor="middle">ESP32-C3-MINI-1</text>
+  <text x="635" y="462" class="note" text-anchor="middle">13.2 × 16.6 × 2.4 mm</text>
+  <text x="635" y="478" class="note" text-anchor="middle">4 MB flash · antenna keep-out</text>
+  <text x="635" y="492" class="note" text-anchor="middle">area must be kept clear</text>
+
+  <!-- Left pins -->
+  <line x1="470" y1="520" x2="520" y2="520" class="w-pwr"/>
+  <text x="524" y="524" class="pin">3V3</text>
+  <text x="466" y="524" class="net" text-anchor="end">3V3</text>
+  <line x1="480" y1="520" x2="480" y2="540" class="w"/>
+  <use href="#cap-v" x="480" y="540"/>
+  <use href="#gnd" x="480" y="560"/>
+  <text x="460" y="550" class="ref" text-anchor="end">C7</text>
+  <text x="460" y="564" class="val" text-anchor="end">10µF</text>
+  <circle cx="480" cy="520" r="2.6" fill="#b45309"/>
+
+  <line x1="470" y1="580" x2="520" y2="580" class="w"/>
+  <text x="524" y="584" class="pin">EN</text>
+  <use href="#res-h" x="410" y="566" transform="rotate(0)"/>
+  <text x="414" y="560" class="ref">R8</text>
+  <text x="414" y="584" class="val">10k</text>
+  <line x1="470" y1="566" x2="440" y2="566" class="w"/>
+  <line x1="470" y1="566" x2="470" y2="580" class="w"/>
+  <circle cx="470" cy="566" r="2.6" fill="#1f2937"/>
+  <line x1="410" y1="566" x2="410" y2="540" class="w"/>
+  <line x1="410" y1="540" x2="480" y2="540" class="w"/>
+  <use href="#cap-v" x="440" y="600"/>
+  <line x1="440" y1="580" x2="440" y2="600" class="w"/>
+  <use href="#gnd" x="440" y="620"/>
+  <circle cx="440" cy="580" r="2.6" fill="#1f2937"/>
+  <line x1="440" y1="580" x2="470" y2="580" class="w"/>
+  <text x="424" y="612" class="ref" text-anchor="end">C8</text>
+  <text x="424" y="626" class="val" text-anchor="end">1µF</text>
+
+  <line x1="520" y1="650" x2="470" y2="650" class="w"/>
+  <text x="524" y="654" class="pin">GND</text>
+  <use href="#gnd" x="470" y="650"/>
+  <text x="500" y="680" class="note" text-anchor="end">C6 0.1µF + C9 10µF</text>
+  <text x="500" y="694" class="note" text-anchor="end">placed by the module</text>
+
+  <!-- Right pins: panel -->
+  <line x1="750" y1="430" x2="790" y2="430" class="w"/>
+  <text x="746" y="434" class="pin" text-anchor="end">GPIO4</text>
+  <text x="794" y="434" class="net">EPD_SCK</text>
+  <line x1="750" y1="452" x2="790" y2="452" class="w"/>
+  <text x="746" y="456" class="pin" text-anchor="end">GPIO6</text>
+  <text x="794" y="456" class="net">EPD_MOSI</text>
+  <line x1="750" y1="474" x2="832" y2="474" class="w"/>
+  <text x="746" y="478" class="pin" text-anchor="end">GPIO7</text>
+  <text x="836" y="478" class="net">EPD_CS</text>
+  <line x1="750" y1="496" x2="832" y2="496" class="w"/>
+  <text x="746" y="500" class="pin" text-anchor="end">GPIO10</text>
+  <text x="836" y="500" class="net">EPD_DC</text>
+  <line x1="750" y1="518" x2="790" y2="518" class="w"/>
+  <text x="746" y="522" class="pin" text-anchor="end">GPIO8</text>
+  <text x="794" y="522" class="net">EPD_RST</text>
+  <line x1="750" y1="540" x2="790" y2="540" class="w"/>
+  <text x="746" y="544" class="pin" text-anchor="end">GPIO9</text>
+  <text x="794" y="544" class="net">EPD_BUSY</text>
+
+  <!-- Right pins: buttons -->
+  <line x1="750" y1="574" x2="832" y2="574" class="w"/>
+  <text x="746" y="578" class="pin" text-anchor="end">GPIO3</text>
+  <text x="836" y="578" class="net">BTN_UP</text>
+  <line x1="750" y1="596" x2="832" y2="596" class="w"/>
+  <text x="746" y="600" class="pin" text-anchor="end">GPIO2</text>
+  <text x="836" y="600" class="net">BTN_DOWN</text>
+  <line x1="750" y1="618" x2="832" y2="618" class="w"/>
+  <text x="746" y="622" class="pin" text-anchor="end">GPIO20</text>
+  <text x="836" y="622" class="net">BTN_MENU</text>
+  <line x1="750" y1="640" x2="832" y2="640" class="w"/>
+  <text x="746" y="644" class="pin" text-anchor="end">GPIO5</text>
+  <text x="836" y="644" class="net">VBAT_ADC</text>
+
+  <!-- Right pins: USB + spare -->
+  <line x1="750" y1="668" x2="832" y2="668" class="w"/>
+  <text x="746" y="672" class="pin" text-anchor="end">GPIO18</text>
+  <text x="836" y="672" class="net">USB_DN</text>
+  <line x1="750" y1="686" x2="832" y2="686" class="w"/>
+  <text x="746" y="690" class="pin" text-anchor="end">GPIO19</text>
+  <text x="836" y="690" class="net">USB_DP</text>
+
+  <text x="414" y="712" class="note">GPIO2/GPIO8 are strapping pins: must be HIGH at boot; EPD_RST and button pull-ups ensure it.</text>
+  <text x="414" y="728" class="note">Since GPIO9 = BUSY (HIGH when idle), the boot condition is met automatically as well.</text>
+  <text x="414" y="744" class="note">GPIO20 = U0RXD → input only; the MENU button therefore cannot wake via GPIO.</text>
+  <text x="414" y="760" class="note">Because GPIO6 (MTCK) is used, the JTAG line is unavailable — debug via USB-Serial-JTAG.</text>
+
+  <!-- ============================================================ -->
+  <!-- F) E-PAPER FPC                                                 -->
+  <!-- ============================================================ -->
+  <rect x="918" y="356" width="492" height="430" class="frame"/>
+  <text x="934" y="378" class="ftitle">F · E-PAPER 2.13&quot; (24-PIN FPC)</text>
+
+  <rect x="1000" y="430" width="160" height="250" class="part"/>
+  <text x="1080" y="456" class="ref" text-anchor="middle">J2</text>
+  <text x="1080" y="474" class="val" text-anchor="middle">0.5 mm · 24 pin</text>
+  <text x="1080" y="492" class="note" text-anchor="middle">bottom-contact FPC</text>
+  <text x="1080" y="510" class="note" text-anchor="middle">Hirose FH12-24S-0.5SH</text>
+  <text x="1080" y="528" class="note" text-anchor="middle">PINOUT VERIFIED</text>
+  <text x="1080" y="560" class="note" text-anchor="middle">Panel: GDEY0213B74</text>
+  <text x="1080" y="578" class="note" text-anchor="middle">250 × 122 px · SSD1680</text>
+  <text x="1080" y="600" class="note" text-anchor="middle">active area</text>
+  <text x="1080" y="616" class="note" text-anchor="middle">48.55 × 23.71 mm</text>
+
+  <line x1="960" y1="452" x2="1000" y2="452" class="w-pwr"/>
+  <text x="956" y="456" class="net" text-anchor="end">3V3 → VCI(16)</text>
+  <line x1="960" y1="474" x2="1000" y2="474" class="w"/>
+  <text x="956" y="478" class="net" text-anchor="end">EPD_SCK → SCL(13)</text>
+  <line x1="960" y1="496" x2="1000" y2="496" class="w"/>
+  <text x="956" y="500" class="net" text-anchor="end">EPD_MOSI → SDA(14)</text>
+  <line x1="960" y1="518" x2="1000" y2="518" class="w"/>
+  <text x="956" y="522" class="net" text-anchor="end">EPD_CS → CS#(12)</text>
+  <line x1="960" y1="540" x2="1000" y2="540" class="w"/>
+  <text x="956" y="544" class="net" text-anchor="end">EPD_DC → D/C#(11)</text>
+  <line x1="960" y1="562" x2="1000" y2="562" class="w"/>
+  <text x="956" y="566" class="net" text-anchor="end">EPD_RST → RES#(10)</text>
+  <line x1="960" y1="584" x2="1000" y2="584" class="w"/>
+  <text x="956" y="588" class="net" text-anchor="end">EPD_BUSY → BUSY(9)</text>
+  <line x1="960" y1="606" x2="1000" y2="606" class="w"/>
+  <text x="956" y="610" class="net" text-anchor="end">GND → VSS(17)</text>
+
+  <!-- Pull-ups -->
+  <line x1="1180" y1="562" x2="1210" y2="562" class="w"/>
+  <use href="#res-h" x="1170" y="562"/>
+  <line x1="1216" y1="562" x2="1250" y2="562" class="w"/>
+  <line x1="1250" y1="562" x2="1250" y2="452" class="w-pwr"/>
+  <line x1="1250" y1="452" x2="1120" y2="452" class="w-pwr"/>
+  <text x="1174" y="556" class="ref">R9</text>
+  <text x="1174" y="580" class="val">100k</text>
+  <circle cx="1120" cy="452" r="2.6" fill="#b45309"/>
+
+  <line x1="1180" y1="584" x2="1210" y2="584" class="w"/>
+  <use href="#res-h" x="1170" y="584"/>
+  <line x1="1216" y1="584" x2="1250" y2="584" class="w"/>
+  <circle cx="1250" cy="584" r="2.6" fill="#b45309"/>
+  <text x="1174" y="602" class="ref">R10</text>
+  <text x="1174" y="616" class="val">100k</text>
+
+  <!-- Buffer capacitor -->
+  <line x1="1000" y1="630" x2="970" y2="630" class="w-pwr"/>
+  <line x1="970" y1="630" x2="970" y2="640" class="w"/>
+  <use href="#cap-v" x="970" y="640"/>
+  <use href="#gnd" x="970" y="660"/>
+  <text x="986" y="650" class="ref">C11</text>
+  <text x="986" y="664" class="val">100µF</text>
+  <text x="986" y="678" class="note">buffer (refresh</text>
+  <text x="986" y="692" class="note">current pulses)</text>
+
+  <text x="1196" y="624" class="warn" text-anchor="start">External capacitor network (required):</text>
+  <text x="1196" y="642" class="note" text-anchor="start">1µF/25V × 8 → VCI(16) VDDIO(15)</text>
+  <text x="1196" y="658" class="note" text-anchor="start">VDD(18) VSH1(20) VSH2(5)</text>
+  <text x="1196" y="674" class="note" text-anchor="start">VSL(22) VGL(23) VCOM(24)</text>
+  <text x="1196" y="692" class="note" text-anchor="start">+ 4.7µF/25V input, BS1(8)→GND</text>
+
+  <rect x="934" y="706" width="460" height="66" fill="#fef2f2" stroke="#b91c1c" stroke-width="1.4" rx="6"/>
+  <text x="946" y="726" class="warn">⚠️ Pinout verified. Remaining risk: external VGH/VGL boost circuit.</text>
+  <text x="946" y="744" class="warn">The panel builds its own ±15 V boost via GDR(2)/RESE(3) pins. In the first prototype</text>
+  <text x="946" y="760" class="warn">use a ready-made adapter board (docs/02 §F). Details: pinouts.md §1.</text>
+
+  <!-- ============================================================ -->
+  <!-- G) BUTTONS                                                    -->
+  <!-- ============================================================ -->
+  <rect x="30" y="706" width="352" height="330" class="frame"/>
+  <text x="46" y="728" class="ftitle">G · BUTTONS (active low)</text>
+
+  <!-- UP -->
+  <use href="#btn" x="60" y="780"/>
+  <line x1="104" y1="780" x2="130" y2="780" class="w"/>
+  <line x1="130" y1="780" x2="130" y2="770" class="w"/>
+  <use href="#gnd" x="130" y="770"/>
+  <line x1="60" y1="780" x2="40" y2="780" class="w"/>
+  <line x1="40" y1="780" x2="40" y2="752" class="w"/>
+  <use href="#res-h" x="46" y="752" transform="rotate(0) scale(1)"/>
+  <line x1="92" y1="752" x2="150" y2="752" class="w"/>
+  <line x1="150" y1="752" x2="150" y2="740" class="w-pwr"/>
+  <text x="56" y="746" class="ref">R13</text>
+  <text x="56" y="770" class="val">100k</text>
+  <text x="152" y="794" class="net">BTN_UP</text>
+  <line x1="40" y1="780" x2="40" y2="796" class="w"/>
+  <use href="#cap-v" x="40" y="796"/>
+  <use href="#gnd" x="40" y="816"/>
+  <text x="52" y="806" class="ref">C12</text>
+  <text x="52" y="820" class="val">100nF</text>
+
+  <!-- DOWN -->
+  <use href="#btn" x="60" y="866"/>
+  <line x1="104" y1="866" x2="130" y2="866" class="w"/>
+  <line x1="130" y1="866" x2="130" y2="856" class="w"/>
+  <use href="#gnd" x="130" y="856"/>
+  <line x1="60" y1="866" x2="40" y2="866" class="w"/>
+  <line x1="40" y1="866" x2="40" y2="838" class="w"/>
+  <use href="#res-h" x="46" y="838"/>
+  <line x1="92" y1="838" x2="150" y2="838" class="w"/>
+  <line x1="150" y1="838" x2="150" y2="826" class="w-pwr"/>
+  <text x="56" y="832" class="ref">R14</text>
+  <text x="56" y="856" class="val">100k</text>
+  <text x="152" y="880" class="net">BTN_DOWN</text>
+
+  <!-- MENU -->
+  <use href="#btn" x="60" y="952"/>
+  <line x1="104" y1="952" x2="130" y2="952" class="w"/>
+  <line x1="130" y1="952" x2="130" y2="942" class="w"/>
+  <use href="#gnd" x="130" y="942"/>
+  <line x1="60" y1="952" x2="40" y2="952" class="w"/>
+  <line x1="40" y1="952" x2="40" y2="924" class="w"/>
+  <use href="#res-h" x="46" y="924"/>
+  <line x1="92" y1="924" x2="150" y2="924" class="w"/>
+  <line x1="150" y1="924" x2="150" y2="912" class="w-pwr"/>
+  <text x="56" y="918" class="ref">R15</text>
+  <text x="56" y="942" class="val">100k</text>
+  <text x="152" y="966" class="net">BTN_MENU</text>
+
+  <text x="200" y="780" class="note">SW2 · page back</text>
+  <text x="200" y="866" class="note">SW3 · page forward</text>
+  <text x="200" y="952" class="note">SW4 · menu / library</text>
+  <text x="46" y="1000" class="note">All buttons have 100nF hardware debounce + 100k pull-up. GPIO2/GPIO3 are in the RTC domain,</text>
+  <text x="46" y="1016" class="note">so they wake from deep sleep via ext1; GPIO20 cannot wake.</text>
+  <text x="46" y="1032" class="note">Resistors connect to the 3V3 rail, capacitors to GND (simplified in the schematic).</text>
+
+  <!-- ============================================================ -->
+  <!-- H) BATTERY SENSE                                                -->
+  <!-- ============================================================ -->
+  <rect x="398" y="806" width="500" height="230" class="frame"/>
+  <text x="414" y="828" class="ftitle">H · BATTERY SENSE</text>
+
+  <line x1="440" y1="880" x2="470" y2="880" class="w-pwr"/>
+  <text x="436" y="884" class="net" text-anchor="end">VBAT_K</text>
+  <use href="#res-h" x="470" y="880"/>
+  <line x1="516" y1="880" x2="560" y2="880" class="w"/>
+  <text x="474" y="874" class="ref">R16</text>
+  <text x="474" y="898" class="val">100k</text>
+
+  <line x1="560" y1="880" x2="560" y2="900" class="w"/>
+  <use href="#res-h" x="514" y="900"/>
+  <text x="518" y="894" class="ref">R17</text>
+  <text x="518" y="918" class="val">100k</text>
+  <line x1="560" y1="900" x2="560" y2="918" class="w"/>
+  <use href="#gnd" x="560" y="918"/>
+
+  <line x1="560" y1="880" x2="640" y2="880" class="w"/>
+  <circle cx="560" cy="880" r="2.6" fill="#1f2937"/>
+  <text x="644" y="884" class="net">VBAT_ADC</text>
+  <line x1="600" y1="880" x2="600" y2="900" class="w"/>
+  <use href="#cap-v" x="600" y="900"/>
+  <use href="#gnd" x="600" y="920"/>
+  <text x="612" y="910" class="ref">C10</text>
+  <text x="612" y="924" class="val">100nF</text>
+  <circle cx="600" cy="880" r="2.6" fill="#1f2937"/>
+
+  <text x="414" y="960" class="note">Divider ratio 1:2 → the actual battery voltage is 2× the measured voltage.</text>
+  <text x="414" y="976" class="note">The divider's continuous current at 4.2 V is 21 µA; this is the dominant drain in sleep.</text>
+  <text x="414" y="992" class="note">1M/1M can be used for lower drain (mind the ADC input impedance limit).</text>
+  <text x="414" y="1008" class="note">Alternative: MAX17048 I²C fuel gauge (if GPIO8/9 are free).</text>
+
+  <!-- Footer -->
+  <text x="960" y="880" class="ftitle">CONNECTION SUMMARY</text>
+  <text x="960" y="902" class="note">Red/orange thick line = power path</text>
+  <text x="960" y="918" class="note">Thin black = signal</text>
+  <text x="960" y="934" class="note">Blue label = net name (same name = connected)</text>
+  <text x="960" y="950" class="note">Red box = information that must be verified</text>
+  <text x="960" y="978" class="note">Full connection table: connections.csv</text>
+  <text x="960" y="994" class="note">Pinout sources: pinouts.md</text>
+</svg>

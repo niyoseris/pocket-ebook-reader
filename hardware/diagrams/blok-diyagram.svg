@@ -1,0 +1,147 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 700" width="980" height="700" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+  <title>Pocket Reader — Block Diagram</title>
+  <desc>Block diagram of the pocket reader made up of an ESP32-C3 and a 2.13 inch e-paper panel: power path, SPI bus, buttons, battery measurement and wireless transfer.</desc>
+
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#1f2937"/>
+    </marker>
+    <marker id="arrowPwr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#b45309"/>
+    </marker>
+    <marker id="arrowRf" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#0e7490"/>
+    </marker>
+    <style>
+      .box      { fill: #f8fafc; stroke: #334155; stroke-width: 1.6; }
+      .box-alt  { fill: #f1f5f9; stroke: #334155; stroke-width: 1.6; }
+      .box-pwr  { fill: #fffbeb; stroke: #b45309; stroke-width: 1.6; }
+      .box-rf   { fill: #ecfeff; stroke: #0e7490; stroke-width: 1.6; }
+      .t-b      { fill: #0f172a; font-size: 14px; font-weight: 600; }
+      .t-s      { fill: #475569; font-size: 11.5px; }
+      .t-mono   { fill: #475569; font-size: 11px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+      .sub      { fill: #64748b; font-size: 12px; }
+      .wire     { stroke: #1f2937; stroke-width: 1.8; fill: none; marker-end: url(#arrow); }
+      .wire-nm  { stroke: #1f2937; stroke-width: 1.8; fill: none; }
+      .wire-pwr { stroke: #b45309; stroke-width: 2.4; fill: none; marker-end: url(#arrowPwr); }
+      .wire-pwr-nm { stroke: #b45309; stroke-width: 2.4; fill: none; }
+      .wire-rf  { stroke: #0e7490; stroke-width: 2; fill: none; stroke-dasharray: 7 4; marker-end: url(#arrowRf); }
+      .rail     { stroke: #b45309; stroke-width: 4; fill: none; stroke-linecap: round; }
+      .frame    { fill: none; stroke: #cbd5e1; stroke-width: 1.2; stroke-dasharray: 6 5; }
+      .lbl      { fill: #334155; font-size: 11px; font-weight: 600; letter-spacing: .06em; }
+    </style>
+  </defs>
+
+  <rect x="0" y="0" width="980" height="700" fill="#ffffff"/>
+
+  <text x="32" y="42" font-size="21" font-weight="700" fill="#0f172a">Pocket Reader — Block Diagram</text>
+  <text x="32" y="64" class="sub">ESP32-C3 · 2.13&quot; e-paper (250×122, SSD1680) · 1S Li-Po · USB-C</text>
+
+  <!-- ==================== POWER PATH ==================== -->
+  <rect x="30" y="90" width="760" height="212" class="frame" rx="10"/>
+  <text x="44" y="112" class="lbl">POWER PATH</text>
+
+  <!-- Top row -->
+  <rect x="52" y="136" width="132" height="60" class="box" rx="8"/>
+  <text x="118" y="161" class="t-b" text-anchor="middle">USB-C</text>
+  <text x="118" y="180" class="t-s" text-anchor="middle">5 V · CC 5.1k</text>
+
+  <rect x="242" y="136" width="150" height="60" class="box-pwr" rx="8"/>
+  <text x="317" y="161" class="t-b" text-anchor="middle">MCP73831</text>
+  <text x="317" y="180" class="t-s" text-anchor="middle">charge 500 mA · R=2k</text>
+
+  <rect x="452" y="136" width="150" height="60" class="box-pwr" rx="8"/>
+  <text x="527" y="161" class="t-b" text-anchor="middle">Li-Po 1S 500 mAh</text>
+  <text x="527" y="180" class="t-s" text-anchor="middle">3.0 – 4.2 V · protected</text>
+
+  <line x1="184" y1="166" x2="238" y2="166" class="wire-pwr"/>
+  <text x="211" y="158" class="t-mono" text-anchor="middle">VBUS</text>
+  <line x1="392" y1="166" x2="448" y2="166" class="wire-pwr"/>
+  <text x="420" y="158" class="t-mono" text-anchor="middle">VBAT</text>
+
+  <!-- Bottom row -->
+  <rect x="452" y="226" width="108" height="58" class="box" rx="8"/>
+  <text x="506" y="251" class="t-b" text-anchor="middle">Power Switch</text>
+  <text x="506" y="270" class="t-s" text-anchor="middle">SPDT slide</text>
+
+  <rect x="620" y="226" width="150" height="58" class="box-pwr" rx="8"/>
+  <text x="695" y="251" class="t-b" text-anchor="middle">TPS63020</text>
+  <text x="695" y="270" class="t-s" text-anchor="middle">buck-boost → 3.3 V</text>
+
+  <line x1="527" y1="196" x2="527" y2="208" class="wire-pwr-nm"/>
+  <line x1="527" y1="208" x2="506" y2="208" class="wire-pwr-nm"/>
+  <line x1="506" y1="208" x2="506" y2="226" class="wire-pwr-nm"/>
+  <line x1="560" y1="255" x2="616" y2="255" class="wire-pwr"/>
+
+  <!-- 3V3 rail: from buck-boost output right, down, then left -->
+  <line x1="770" y1="255" x2="860" y2="255" class="wire-pwr-nm"/>
+  <line x1="860" y1="255" x2="860" y2="312" class="wire-pwr-nm"/>
+  <line x1="860" y1="312" x2="210" y2="312" class="rail"/>
+  <circle cx="210" cy="312" r="4.5" fill="#b45309"/>
+  <text x="866" y="300" class="lbl" text-anchor="end" fill="#b45309">3V3 RAIL</text>
+
+  <line x1="210" y1="312" x2="210" y2="330" class="wire-pwr"/>
+  <line x1="602" y1="312" x2="602" y2="330" class="wire-pwr-nm"/>
+  <line x1="602" y1="330" x2="602" y2="330" class="wire-pwr"/>
+
+  <!-- ==================== MCU ==================== -->
+  <rect x="60" y="330" width="300" height="186" class="box-alt" rx="8"/>
+  <text x="210" y="360" class="t-b" text-anchor="middle" font-size="15">ESP32-C3-MINI-1</text>
+  <text x="210" y="380" class="t-s" text-anchor="middle">RISC-V 160 MHz · 4 MB flash · Wi-Fi/BLE</text>
+  <line x1="80" y1="394" x2="340" y2="394" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="80" y="415" class="t-s">• Deep sleep: ~5 µA (chip) / ~20 µA (board)</text>
+  <text x="80" y="435" class="t-s">• RTC memory: book + page position</text>
+  <text x="80" y="455" class="t-s">• GPIO5 = ADC2_CH0 → battery measurement</text>
+  <text x="80" y="475" class="t-s">• SPI mode 0 → panel</text>
+  <text x="80" y="495" class="t-s">• USB-Serial-JTAG (GPIO18/19)</text>
+
+  <!-- ==================== PANEL ==================== -->
+  <rect x="452" y="330" width="300" height="186" class="box-alt" rx="8"/>
+  <text x="602" y="360" class="t-b" text-anchor="middle" font-size="15">E-Paper 2.13&quot;</text>
+  <text x="602" y="380" class="t-s" text-anchor="middle">250 × 122 px · SSD1680 · 24-pin FPC</text>
+  <line x1="472" y1="394" x2="732" y2="394" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="472" y="415" class="t-s">• Active area 48.55 × 23.71 mm</text>
+  <text x="472" y="435" class="t-s">• Full refresh ~2 s · 26.4 mW</text>
+  <text x="472" y="455" class="t-s">• Partial refresh (fast LUT)</text>
+  <text x="472" y="475" class="t-s">• Panel sleep &lt; 0.01 µA</text>
+  <text x="472" y="495" class="t-s">• 100 µF bulk cap + decoupling capacitors</text>
+
+  <!-- SPI -->
+  <line x1="360" y1="423" x2="448" y2="423" class="wire"/>
+  <text x="404" y="414" class="t-mono" text-anchor="middle">SPI</text>
+  <text x="404" y="442" class="t-mono" text-anchor="middle">DC/RST</text>
+  <text x="404" y="456" class="t-mono" text-anchor="middle">BUSY</text>
+
+  <!-- ==================== BUTTONS ==================== -->
+  <rect x="60" y="556" width="180" height="96" class="box" rx="8"/>
+  <text x="150" y="584" class="t-b" text-anchor="middle">3 × Buttons</text>
+  <text x="150" y="605" class="t-s" text-anchor="middle">active-low to GND</text>
+  <text x="150" y="624" class="t-s" text-anchor="middle">100k + 100nF</text>
+  <text x="150" y="643" class="t-s" text-anchor="middle">GPIO2 / 3 / 20</text>
+  <line x1="150" y1="556" x2="150" y2="546" class="wire-nm"/>
+  <line x1="150" y1="546" x2="130" y2="546" class="wire-nm"/>
+  <line x1="130" y1="546" x2="130" y2="516" class="wire"/>
+  <text x="158" y="528" class="t-mono">ext1 wake</text>
+
+  <!-- ==================== BATTERY MEASUREMENT ==================== -->
+  <rect x="280" y="556" width="180" height="96" class="box" rx="8"/>
+  <text x="370" y="584" class="t-b" text-anchor="middle">Battery Divider</text>
+  <text x="370" y="605" class="t-s" text-anchor="middle">100k / 100k</text>
+  <text x="370" y="624" class="t-s" text-anchor="middle">+ 100nF filter</text>
+  <text x="370" y="643" class="t-s" text-anchor="middle">→ GPIO5 (ADC)</text>
+  <line x1="300" y1="556" x2="300" y2="538" class="wire-nm"/>
+  <line x1="300" y1="538" x2="250" y2="538" class="wire-nm"/>
+  <line x1="250" y1="538" x2="250" y2="516" class="wire"/>
+
+  <!-- ==================== WIRELESS ==================== -->
+  <rect x="640" y="556" width="300" height="96" class="box-rf" rx="8"/>
+  <text x="790" y="584" class="t-b" text-anchor="middle">Host Tools</text>
+  <text x="790" y="605" class="t-s" text-anchor="middle">tools/epub2epr.py · tools/send.py</text>
+  <text x="790" y="624" class="t-s" text-anchor="middle">http://pocketreader.local</text>
+  <text x="790" y="643" class="t-s" text-anchor="middle">AP mode: PocketReader-XXXX</text>
+  <line x1="790" y1="556" x2="790" y2="528" class="wire-rf"/>
+  <line x1="790" y1="528" x2="602" y2="528" class="wire-nm" stroke="#0e7490" stroke-dasharray="7 4"/>
+  <line x1="602" y1="528" x2="602" y2="516" class="wire-rf"/>
+
+  <text x="32" y="682" class="sub">Thick orange line = 3.3 V power rail. Dashed blue = Wi-Fi link opened only in transfer mode; fully shut down before sleep.</text>
+</svg>

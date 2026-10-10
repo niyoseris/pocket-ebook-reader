@@ -1,0 +1,1022 @@
+<!-- GENERATED from site/template.html by tools/build_site.py — do not edit -->
+<!DOCTYPE html>
+<html lang="{{page.lang}}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{page.title}}</title>
+<meta name="description" content="{{page.desc}}">
+<style>
+  :root{
+    --bg:#0a1017; --bg2:#0f1721; --panel:#141d29; --panel2:#1a2533;
+    --ink:#e8eef7; --muted:#8ba0bb; --line:#243346;
+    --accent:#f0a020; --accent2:#4cc2f1; --ok:#3ddc97; --warn:#ff6b6b;
+    --pcb:#1c2530; --gold:#d8a44a;
+    --radius:14px;
+    --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+    --sans:ui-sans-serif,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  @media (prefers-color-scheme: light){
+    :root{
+      --bg:#f6f8fb; --bg2:#ffffff; --panel:#ffffff; --panel2:#f1f5f9;
+      --ink:#0d1620; --muted:#5b6b80; --line:#d8e0ea;
+      --accent:#b26a00; --accent2:#0b7fb0; --ok:#0f8a5f; --warn:#c0392b;
+      --pcb:#2a3b4d; --gold:#a97c25;
+    }
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--ink); font-family:var(--sans);
+    line-height:1.6; -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--accent2)}
+  .wrap{max-width:1240px;margin:0 auto;padding:0 20px}
+
+  header{padding:46px 0 26px;border-bottom:1px solid var(--line)}
+  h1{font-size:clamp(26px,4vw,40px);line-height:1.15;margin:0 0 10px;letter-spacing:-.02em}
+  .sub{color:var(--muted);font-size:16px;max-width:74ch;margin:0}
+  .badges{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+  .badge{
+    font:600 12px/1 var(--mono);letter-spacing:.04em;
+    padding:7px 11px;border-radius:999px;
+    background:var(--panel2);border:1px solid var(--line);color:var(--muted)
+  }
+  .badge.on{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 45%,var(--line))}
+
+  h2{font-size:22px;margin:0 0 6px;letter-spacing:-.01em}
+  h3{font-size:15px;margin:26px 0 8px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+  section{padding:42px 0;border-bottom:1px solid var(--line)}
+  .lede{color:var(--muted);margin:0 0 20px;max-width:80ch}
+
+  /* ---------- 3B görüntüleyici ---------- */
+  .viewer{
+    position:relative;background:
+      radial-gradient(120% 90% at 50% 0%,var(--bg2) 0%,var(--bg) 70%);
+    border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;
+    box-shadow:0 22px 60px -30px rgba(0,0,0,.7)
+  }
+  #scene{display:block;width:100%;height:min(70vh,620px);touch-action:none;cursor:grab}
+  #scene:active{cursor:grabbing}
+  .labels{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+  .lab{
+    position:absolute;transform:translate(-50%,-50%);
+    font:600 11px/1.35 var(--mono);white-space:nowrap;
+    padding:4px 8px;border-radius:7px;
+    background:color-mix(in srgb,var(--bg) 82%,transparent);
+    border:1px solid var(--line);color:var(--ink);
+    backdrop-filter:blur(6px);transition:opacity .18s
+  }
+  .lab.hot{border-color:var(--accent);color:var(--accent)}
+  .lab i{color:var(--muted);font-style:normal}
+  .labdot{
+    position:absolute;width:8px;height:8px;margin:-4px 0 0 -4px;border-radius:50%;
+    border:1.5px solid var(--accent);
+    background:color-mix(in srgb,var(--bg) 60%,transparent);
+    box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 14%,transparent);
+    transition:opacity .18s
+  }
+
+  .bar{
+    position:absolute;left:12px;right:12px;bottom:12px;
+    display:flex;flex-wrap:wrap;gap:10px;align-items:center;
+    padding:10px 12px;border-radius:11px;
+    background:color-mix(in srgb,var(--bg) 78%,transparent);
+    border:1px solid var(--line);backdrop-filter:blur(9px)
+  }
+  .bar label{font:600 11px var(--mono);color:var(--muted);letter-spacing:.04em}
+  .bar input[type=range]{width:130px;accent-color:var(--accent)}
+  .seg{display:flex;gap:4px;flex-wrap:wrap}
+  .seg button{
+    font:600 11px var(--mono);color:var(--muted);cursor:pointer;
+    background:var(--panel2);border:1px solid var(--line);
+    padding:6px 10px;border-radius:8px;transition:.15s
+  }
+  .seg button:hover{color:var(--ink);border-color:var(--muted)}
+  .seg button.on{color:var(--accent);border-color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,var(--panel2))}
+  .spacer{flex:1 1 auto}
+  .hint{
+    position:absolute;top:12px;left:12px;
+    font:500 11px/1.5 var(--mono);color:var(--muted);
+    background:color-mix(in srgb,var(--bg) 74%,transparent);
+    border:1px solid var(--line);border-radius:9px;padding:8px 11px;
+    backdrop-filter:blur(8px);max-width:260px
+  }
+  #pick{
+    position:absolute;top:12px;right:12px;
+    font:600 12px/1.5 var(--mono);color:var(--accent);
+    background:color-mix(in srgb,var(--bg) 80%,transparent);
+    border:1px solid var(--line);border-radius:9px;padding:8px 12px;
+    backdrop-filter:blur(8px);opacity:0;transition:opacity .2s;max-width:300px
+  }
+  #pick.show{opacity:1}
+  #pick span{color:var(--muted);font-weight:500}
+
+  /* ---------- zaman çizelgesi (otomatik oynatma) ---------- */
+  .bar.play{flex-direction:column;align-items:stretch;gap:8px}
+  .tlrow{display:flex;align-items:center;gap:10px}
+  .playbtn{
+    width:34px;height:34px;flex:0 0 34px;display:grid;place-items:center;
+    background:var(--accent);color:#1a1206;border:none;border-radius:50%;
+    cursor:pointer;font-size:14px;line-height:1;transition:.15s;padding:0
+  }
+  .playbtn:hover{filter:brightness(1.12)}
+  .playbtn.playing{background:var(--panel2);color:var(--accent);
+    box-shadow:inset 0 0 0 1.5px var(--accent)}
+  .track{position:relative;flex:1 1 auto;height:30px;cursor:pointer}
+  .track::before{
+    content:"";position:absolute;left:0;right:0;top:11px;height:8px;border-radius:4px;
+    background:var(--panel2);border:1px solid var(--line)
+  }
+  .fill{position:absolute;left:0;top:12px;height:6px;width:0;border-radius:3px;
+    background:var(--accent);opacity:.9}
+  .knob{
+    position:absolute;top:9px;width:12px;height:12px;margin-left:-6px;border-radius:50%;
+    background:var(--accent);border:2px solid var(--bg);pointer-events:none
+  }
+  .tlabel{font:600 10.5px var(--mono);color:var(--muted);min-width:96px;text-align:right}
+  .phasename{font:600 11px var(--mono);color:var(--accent);min-width:104px}
+
+  .secline{display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+    border-top:1px solid var(--line);padding-top:9px}
+  .secline label{font:600 11px var(--mono);color:var(--muted);letter-spacing:.04em}
+  .secline input[type=range]{flex:1 1 auto;max-width:200px}
+
+  /* ---------- kesit göstergesi ---------- */
+  .cutmark{
+    position:absolute;inset:0;pointer-events:none;border-radius:4px;
+    border:2px solid color-mix(in srgb,var(--accent) 55%,transparent);
+    opacity:0;transition:opacity .2s
+  }
+  .cutmark.on{opacity:1}
+  .cutbadge{
+    position:absolute;left:50%;bottom:10px;transform:translateX(-50%);
+    font:700 10.5px var(--mono);color:var(--accent);white-space:nowrap;
+    background:color-mix(in srgb,var(--bg) 86%,transparent);
+    border:1px solid color-mix(in srgb,var(--accent) 45%,var(--line));
+    border-radius:999px;padding:5px 11px;display:none
+  }
+  .cutbadge.on{display:block}
+
+  /* ---------- kartlar / ızgara ---------- */
+  .grid{display:grid;gap:14px}
+  .g3{grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+  .g4{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
+  .card{
+    background:var(--panel);border:1px solid var(--line);
+    border-radius:var(--radius);padding:16px 18px
+  }
+  .card h4{margin:0 0 4px;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+  .card .big{font:700 26px/1.1 var(--mono);letter-spacing:-.02em;margin:2px 0 4px}
+  .card p{margin:0;color:var(--muted);font-size:13px}
+
+  /* ---------- çizimler ---------- */
+  figure{margin:0}
+  .drawing{
+    background:var(--panel);border:1px solid var(--line);
+    border-radius:var(--radius);overflow:hidden
+  }
+  .drawing img{display:block;width:100%;height:auto;background:#fff}
+  .drawing.light img{background:#fff}
+  figcaption{
+    padding:12px 16px;color:var(--muted);font-size:13px;
+    border-top:1px solid var(--line);background:var(--panel)
+  }
+  figcaption b{color:var(--ink)}
+  details.scroll{max-height:min(72vh,760px);overflow:auto;border-radius:var(--radius)}
+  details.scroll img{width:100%;height:auto;display:block;background:#fff}
+
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line)}
+  th{color:var(--muted);font:600 11px var(--mono);letter-spacing:.06em;text-transform:uppercase}
+  td code{font:500 12.5px var(--mono);color:var(--accent2)}
+  tbody tr:hover{background:var(--panel2)}
+
+  .note{
+    border-left:3px solid var(--accent);background:var(--panel);
+    border-radius:0 10px 10px 0;padding:13px 16px;margin:16px 0;
+    color:var(--muted);font-size:13.5px
+  }
+  .note b{color:var(--ink)}
+  .note.bad{border-left-color:var(--warn)}
+  .note.ok{border-left-color:var(--ok)}
+
+  footer{padding:34px 0 60px;color:var(--muted);font-size:13px}
+  .kv{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+  .kv span{font:500 12px var(--mono);color:var(--muted);background:var(--panel2);
+    border:1px solid var(--line);border-radius:7px;padding:5px 9px}
+  @media (max-width:640px){
+    .hint{display:none}
+    .bar{gap:7px;padding:9px}
+    .bar input[type=range]{width:88px}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <h1>{{hero.title}}</h1>
+    <p class="sub">
+      {{hero.sub}}
+    </p>
+    <div class="badges">
+      <span class="badge on">{{badge.screen}}</span>
+      <span class="badge on">{{badge.chip}}</span>
+      <span class="badge">{{badge.dims}}</span>
+      <span class="badge">{{badge.pcb}}</span>
+      <span class="badge">{{badge.parts}}</span>
+      <span class="badge">{{badge.nets}}</span>
+      <span class="badge">{{badge.sleep}}</span>
+    </div>
+  </div>
+</header>
+
+<!-- ==================== 3B GÖRÜNTÜLEYİCİ ==================== -->
+<section>
+  <div class="wrap">
+    <h2>{{sec3d.h2}}</h2>
+    <p class="lede">
+      {{sec3d.lede}}
+    </p>
+
+    <div class="viewer">
+      <canvas id="scene"></canvas>
+      <div class="labels" id="labels"></div>
+      <div class="hint">
+        {{viewer.hint}}
+      </div>
+      <div id="pick"></div>
+      <div class="cutmark" id="cutmark"><span class="cutbadge" id="cutbadge"></span></div>
+      <div class="bar play">
+        <div class="tlrow">
+          <button class="playbtn" id="play" title="{{btn.play.title}}">▶</button>
+          <span class="phasename" id="phase">{{phase.assembled}}</span>
+          <div class="track" id="track">
+            <div class="fill" id="fill"></div>
+            <div class="knob" id="knob"></div>
+          </div>
+          <span class="tlabel" id="tlabel">{{timeline.t0}}</span>
+        </div>
+
+        <div class="tlrow">
+          <label for="ex">{{label.explode}}</label>
+          <input id="ex" type="range" min="0" max="100" value="0" style="width:130px">
+          <div class="seg" id="views">
+            <button data-v="iso" class="on">{{btn.view.iso}}</button>
+            <button data-v="front">{{btn.view.front}}</button>
+            <button data-v="back">{{btn.view.back}}</button>
+            <button data-v="side">{{btn.view.side}}</button>
+            <button data-v="top">{{btn.view.top}}</button>
+            <button data-v="explode">{{btn.view.explode}}</button>
+          </div>
+          <span class="spacer"></span>
+          <div class="seg" id="toggles">
+            <button data-t="case" class="on">{{btn.toggle.case}}</button>
+            <button data-t="labels" class="on">{{btn.toggle.labels}}</button>
+            <button data-t="spin">{{btn.toggle.spin}}</button>
+          </div>
+        </div>
+
+        <div class="secline">
+          <button class="segbtn" data-t="section" id="secbtn"
+                  style="font:600 11px var(--mono);color:var(--muted);cursor:pointer;
+                         background:var(--panel2);border:1px solid var(--line);
+                         padding:6px 10px;border-radius:8px">{{btn.section}}</button>
+          <label for="cut">{{label.cutplane}}</label>
+          <input id="cut" type="range" min="0" max="100" value="50" disabled>
+          <span class="spacer"></span>
+          <span class="tlabel" id="cutinfo">{{cut.off}}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid g4" style="margin-top:16px">
+      <div class="card"><h4>{{card.body.t}}</h4><div class="big">62 × 32</div><p>{{card.body.d}}</p></div>
+      <div class="card"><h4>{{card.glass.t}}</h4><div class="big">59.2 × 29.2</div><p>{{card.glass.d}}</p></div>
+      <div class="card"><h4>{{card.pcb.t}}</h4><div class="big">45 × 24</div><p>{{card.pcb.d}}</p></div>
+      <div class="card"><h4>{{card.cell.t}}</h4><div class="big">26 × 21</div><p>{{card.cell.d}}</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== KATMANLAR ==================== -->
+<section>
+  <div class="wrap">
+    <h2>{{sec.thick.h2}}</h2>
+    <p class="lede">
+      {{sec.thick.lede}}
+    </p>
+    <table>
+      <thead><tr><th>{{th.hash}}</th><th>{{th.layer}}</th><th>{{th.thickness}}</th><th>{{th.note}}</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>{{tr.r1.name}}</td><td><code>1.20 mm</code></td><td>{{tr.r1.note}}</td></tr>
+        <tr><td>2</td><td>{{tr.r2.name}}</td><td><code>1.05 mm</code></td><td>{{tr.r2.note}}</td></tr>
+        <tr><td>3</td><td>{{tr.r3.name}}</td><td><code>0.80 mm</code></td><td>{{tr.r3.note}}</td></tr>
+        <tr><td>4</td><td>{{tr.r4.name}}</td><td><code>1.60 mm</code></td><td>{{tr.r4.note}}</td></tr>
+        <tr><td>5</td><td>{{tr.r5.name}}</td><td><code>2.50 mm</code></td><td>{{tr.r5.note}}</td></tr>
+        <tr><td>6</td><td>{{tr.r6.name}}</td><td><code>4.00 mm</code></td><td>{{tr.r6.note}}</td></tr>
+        <tr><td>7</td><td>{{tr.r7.name}}</td><td><code>1.60 mm</code></td><td>{{tr.r7.note}}</td></tr>
+        <tr><td></td><td><b>{{tr.total.name}}</b></td><td><code>12.75 mm</code></td><td>{{tr.total.note}}</td></tr>
+      </tbody>
+    </table>
+
+    <div class="note bad">
+      {{note.fix}}
+    </div>
+  </div>
+</section>
+
+<!-- ==================== PCB ÇİZİMLERİ ==================== -->
+<section>
+  <div class="wrap">
+    <h2>{{sec.pcb.h2}}</h2>
+    <p class="lede">
+      {{sec.pcb.lede}}
+    </p>
+    <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(340px,1fr))">
+      <figure class="drawing">
+        <img src="../hardware/pcb/pcb-layout-top.svg" alt="{{fig.top.alt}}">
+        <figcaption>{{fig.top.cap}}</figcaption>
+      </figure>
+      <figure class="drawing">
+        <img src="../hardware/pcb/pcb-layout-bottom.svg" alt="{{fig.bottom.alt}}">
+        <figcaption>{{fig.bottom.cap}}</figcaption>
+      </figure>
+    </div>
+
+    <div class="note bad">
+      {{note.pcb}}
+    </div>
+  </div>
+</section>
+
+<!-- ==================== MONTAJ ==================== -->
+<section>
+  <div class="wrap">
+    <h2>{{sec.exploded.h2}}</h2>
+    <p class="lede">{{sec.exploded.lede}}</p>
+    <figure class="drawing">
+      <img src="../hardware/diagrams/case-exploded.svg" alt="{{fig.exploded.alt}}">
+      <figcaption>{{fig.exploded.cap}}</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ==================== ŞEMA ==================== -->
+<section>
+  <div class="wrap">
+    <h2>{{sec.sch.h2}}</h2>
+    <p class="lede">
+      {{sec.sch.lede}}
+    </p>
+    <details class="scroll">
+      <summary style="cursor:pointer;padding:12px 16px;font:600 13px var(--mono);color:var(--accent)">
+        {{sch.summary}}
+      </summary>
+      <img src="../hardware/schematic/pocket-reader-schematic.svg" alt="{{sch.alt}}">
+    </details>
+    <div class="grid g3" style="margin-top:16px">
+      <div class="card"><h4>{{card.power.t}}</h4><p>{{card.power.d}}</p></div>
+      <div class="card"><h4>{{card.panel.t}}</h4><p>{{card.panel.d}}</p></div>
+      <div class="card"><h4>{{card.buttons.t}}</h4><p>{{card.buttons.d}}</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== GERÇEKÇİ VERİ ==================== -->
+<section>
+  <div class="wrap">
+    <h2>{{sec.data.h2}}</h2>
+    <p class="lede">
+      {{sec.data.lede}}
+    </p>
+    <div class="kv">
+      <span>{{kv.placement}}</span>
+      <span>{{kv.connections}}</span>
+      <span>{{kv.check}}</span>
+      <span>{{kv.layout}}</span>
+      <span>{{kv.netlist}}</span>
+      <span>{{kv.case}}</span>
+    </div>
+    <div class="note ok">
+      {{note.verify}}
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <b style="color:var(--ink)">{{hero.title}}</b> · {{foot.tagline}}<br>
+    {{foot.license}}<br>
+    <span style="display:inline-block;margin-top:8px">
+      {{foot.note}}
+    </span>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/* =====================================================================
+   Yerleşim verisi — tools/gen_placement.py tarafından üretilen
+   hardware/pcb/placement.csv dosyasından birebir alınmıştır.
+   x,y = mm cinsinden parça merkezi (köken sol alt), w,h = ayak uzanımı,
+   z = kart üstünden yükseklik.
+   ===================================================================== */
+const PARTS = [
+  {r:"U5",v:"ESP32-C3-MINI-1",k:"module",x:8.3,y:12,w:16.6,h:13.2,z:2.4,g:"active"}, {r:"J1",v:"USB-C 16P",k:"conn",x:24.5,y:3.75,w:9,h:7.5,z:3.2,g:"active"}, {r:"J2",v:"FPC 24P 0.5mm",k:"conn",x:31,y:20.6,w:14,h:5.5,z:2,g:"active"},
+  {r:"U3",v:"TPS63020DSJR",k:"ic",x:29,y:11,w:3,h:4,z:0.9,g:"active"}, {r:"L1",v:"1.5uH",k:"inductor",x:36.5,y:6,w:4,h:4,z:1.8,g:"active"}, {r:"U2",v:"MCP73831",k:"ic",x:21.5,y:20.5,w:3,h:3,z:1.1,g:"active"},
+  {r:"D1",v:"yesil LED",k:"led",x:27,y:16.5,w:1.6,h:0.8,z:0.6,g:"active"}, {r:"U1",v:"USBLC6-2SC6",k:"ic",x:21.5,y:16.5,w:3,h:3,z:1.1,g:"active"}, {r:"L2",v:"47uH",k:"inductor",x:20,y:11,w:4.5,h:4.5,z:2,g:"active"},
+  {r:"Q2",v:"Si1308EDL",k:"ic",x:32.5,y:10,w:3,h:3,z:1.1,g:"active"}, {r:"D2",v:"MBR0530",k:"diode",x:24.5,y:13,w:2.7,h:1.6,z:1,g:"active"}, {r:"D3",v:"MBR0530",k:"diode",x:24.5,y:11,w:2.7,h:1.6,z:1,g:"active"},
+  {r:"D4",v:"MBR0530",k:"diode",x:24.5,y:9,w:2.7,h:1.6,z:1,g:"active"}, {r:"SW2",v:"taktil",k:"button",x:42,y:17.2,w:4.5,h:4.5,z:3.5,g:"active"}, {r:"SW3",v:"taktil",k:"button",x:42,y:12,w:4.5,h:4.5,z:3.5,g:"active"},
+  {r:"SW4",v:"taktil",k:"button",x:42,y:6.8,w:4.5,h:4.5,z:3.5,g:"active"}, {r:"SW1",v:"SPDT kayar",k:"switch",x:34.25,y:1.8,w:4.5,h:2.8,z:1.5,g:"active"}, {r:"BT1",v:"Li-Po 1S",k:"battery",x:7.5,y:2.3,w:5,h:3.5,z:0,g:"active"},
+  {r:"C3",v:"10uF",k:"cap",x:29,y:14.2,w:1.6,h:0.8,z:0.9,g:"passive"}, {r:"C4",v:"10uF",k:"cap",x:32,y:13.6,w:1.6,h:0.8,z:0.9,g:"passive"}, {r:"C5",v:"0.1uF",k:"cap",x:30.5,y:7.5,w:1.6,h:0.8,z:0.9,g:"passive"},
+  {r:"C6",v:"22uF",k:"cap",x:27,y:15,w:1.6,h:0.8,z:0.9,g:"passive"}, {r:"C7",v:"22uF",k:"cap",x:31,y:15,w:1.6,h:0.8,z:0.9,g:"passive"}, {r:"C8",v:"22uF",k:"cap",x:29,y:15.5,w:1.6,h:0.8,z:0.9,g:"passive"},
+  {r:"C9",v:"0.1uF",k:"cap",x:32.5,y:7.5,w:1.6,h:0.8,z:0.9,g:"passive"}, {r:"R5",v:"1M",k:"res",x:30.5,y:6,w:1.6,h:0.8,z:0.6,g:"passive"}, {r:"R6",v:"180k",k:"res",x:34,y:12.5,w:1.6,h:0.8,z:0.6,g:"passive"},
+  {r:"R7",v:"100k",k:"res",x:32.9,y:6,w:1.6,h:0.8,z:0.6,g:"passive"}, {r:"JP1",v:"0R",k:"jumper",x:36.5,y:9.2,w:2,h:1.25,z:0.6,g:"passive"}, {r:"C1",v:"4.7uF",k:"cap",x:18.5,y:23.1,w:1.6,h:0.8,z:0.9,g:"passive"},
+  {r:"C2",v:"4.7uF",k:"cap",x:17.9,y:20.5,w:1.6,h:0.8,z:0.9,g:"passive"}, {r:"R3",v:"2k",k:"res",x:18.5,y:17.9,w:1.6,h:0.8,z:0.6,g:"passive"}, {r:"R4",v:"470R",k:"res",x:21.5,y:23,w:1.6,h:0.8,z:0.6,g:"passive"},
+  {r:"R1",v:"5.1k",k:"res",x:18.5,y:19.1,w:1.6,h:0.8,z:0.6,g:"passive"}, {r:"R2",v:"5.1k",k:"res",x:17.9,y:16.5,w:1.6,h:0.8,z:0.6,g:"passive"}, {r:"C11",v:"10uF",k:"cap",x:8.5,y:19.5,w:1.6,h:0.8,z:0.9,g:"passive"},
+  {r:"C12",v:"0.1uF",k:"cap",x:6.5,y:19.5,w:1.6,h:0.8,z:0.9,g:"passive"}, {r:"R8",v:"10k",k:"res",x:10.5,y:19.5,w:1.6,h:0.8,z:0.6,g:"passive"}, {r:"C10",v:"1uF",k:"cap",x:11.5,y:4.5,w:1.6,h:0.8,z:0.9,g:"passive"},
+  {r:"R9",v:"100k",k:"res",x:31,y:17,w:1.6,h:0.8,z:0.6,g:"passive"}, {r:"R10",v:"100k",k:"res",x:29,y:17,w:1.6,h:0.8,z:0.6,g:"passive"}, {r:"C13",v:"1uF",k:"cap",x:33,y:17,w:1.6,h:0.8,z:0.9,g:"passive"},
+  {r:"C14",v:"1uF",k:"cap",x:35,y:17,w:1.6,h:0.8,z:0.9,g:"passive"}, {r:"C15",v:"1uF",k:"cap",x:20,y:14.2,w:1.6,h:0.8,z:0.9,g:"passive"}, {r:"C16",v:"1uF",k:"cap",x:18.5,y:8,w:1.6,h:0.8,z:0.9,g:"passive"},
+  {r:"C17",v:"1uF",k:"cap",x:18,y:14,w:1.6,h:0.8,z:0.9,g:"passive"}, {r:"C18",v:"1uF",k:"cap",x:18.5,y:6.5,w:1.6,h:0.8,z:0.9,g:"passive"}, {r:"C19",v:"1uF",k:"cap",x:35.5,y:11,w:1.6,h:0.8,z:0.9,g:"passive"},
+  {r:"C20",v:"1uF",k:"cap",x:34,y:14,w:1.6,h:0.8,z:0.9,g:"passive"}, {r:"C21",v:"4.7uF",k:"cap",x:36,y:12.5,w:1.6,h:0.8,z:0.9,g:"passive"}, {r:"C22",v:"100uF",k:"cap",x:37.5,y:11,w:1.6,h:0.8,z:0.9,g:"passive"},
+  {r:"C23",v:"4.7uF",k:"cap",x:36,y:14,w:1.6,h:0.8,z:0.9,g:"passive"}, {r:"C24",v:"1uF",k:"cap",x:32.5,y:4.5,w:1.6,h:0.8,z:0.9,g:"passive"}, {r:"R18",v:"1M",k:"res",x:33,y:15.5,w:1.6,h:0.8,z:0.6,g:"passive"},
+  {r:"R19",v:"2.2R",k:"res",x:24.5,y:16.2,w:1.6,h:0.8,z:0.6,g:"passive"}, {r:"R13",v:"100k",k:"res",x:38.5,y:17,w:1.6,h:0.8,z:0.6,g:"passive"}, {r:"C25",v:"100nF",k:"cap",x:38.5,y:15.5,w:1.6,h:0.8,z:0.9,g:"passive"},
+  {r:"R14",v:"100k",k:"res",x:38.5,y:12.5,w:1.6,h:0.8,z:0.6,g:"passive"}, {r:"C26",v:"100nF",k:"cap",x:38.5,y:14,w:1.6,h:0.8,z:0.9,g:"passive"}, {r:"R15",v:"100k",k:"res",x:39.5,y:3,w:1.6,h:0.8,z:0.6,g:"passive"},
+  {r:"C27",v:"100nF",k:"cap",x:39.5,y:1.5,w:1.6,h:0.8,z:0.9,g:"passive"}, {r:"R16",v:"100k",k:"res",x:11.5,y:2.5,w:1.6,h:0.8,z:0.6,g:"passive"}, {r:"R17",v:"100k",k:"res",x:11.5,y:1,w:1.6,h:0.8,z:0.6,g:"passive"},
+  {r:"C28",v:"100nF",k:"cap",x:13.5,y:2.5,w:1.6,h:0.8,z:0.9,g:"passive"},
+];
+
+/* Board and case geometry (mm) */
+const BOARD_W = 45, BOARD_H = 24, BOARD_T = 1.6;
+const CX = BOARD_W / 2, CZ = BOARD_H / 2;          // board centre in world XZ
+const GLASS_W = 59.2, GLASS_H = 29.2, GLASS_T = 1.05;
+const CASE_W = 62, CASE_D = 32, CASE_H = 13;
+const CELL_W = 26, CELL_H = 21, CELL_T = 4.5;
+
+/* Vertical stack, y = 0 is the board's top face */
+const Y = {
+  pcbTop: 0, pcbBot: -BOARD_T,
+  panelBot: 3.30, panelTop: 3.30 + GLASS_T,
+  bezelBot: 4.35, bezelTop: 4.35 + 1.20,
+  cellTop: -2.10, cellBot: -2.10 - CELL_T,
+  lidTop: -6.60, lidBot: -8.20
+};
+const SPREAD = { pcb: 0, panel: 3.4, bezel: 5.6, fpc: 2.2, cell: -3.6, lid: -6.4 };
+
+/* ------------------------------------------------------------------ */
+/*  Scene                                                              */
+/* ------------------------------------------------------------------ */
+const canvas = document.getElementById('scene');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+renderer.setClearColor(0x000000, 0);          /* CSS gradyanı arkadan görünsün */
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+renderer.outputEncoding = THREE.sRGBEncoding;
+renderer.physicallyCorrectLights = false;
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(34, 1, 0.5, 4000);
+
+scene.add(new THREE.HemisphereLight(0xdfe9f5, 0x0a1017, 0.85));
+const key = new THREE.DirectionalLight(0xffffff, 1.15); key.position.set(60, 90, 70); scene.add(key);
+const fill = new THREE.DirectionalLight(0x88bbff, 0.5); fill.position.set(-70, 40, -60); scene.add(fill);
+const rim = new THREE.DirectionalLight(0xffd6a0, 0.45); rim.position.set(10, -30, 80); scene.add(rim);
+
+const root = new THREE.Group(); scene.add(root);
+
+const MAT = {
+  pcb:   new THREE.MeshStandardMaterial({ color: 0x1c2530, roughness: 0.62, metalness: 0.24 }),
+  gold:  new THREE.MeshStandardMaterial({ color: 0xd8a44a, roughness: 0.32, metalness: 0.92 }),
+  metal: new THREE.MeshStandardMaterial({ color: 0xb9c3d0, roughness: 0.34, metalness: 0.82 }),
+  dark:  new THREE.MeshStandardMaterial({ color: 0x2b3646, roughness: 0.72, metalness: 0.14 }),
+  glass: new THREE.MeshStandardMaterial({ color: 0xdde5ee, roughness: 0.86, metalness: 0.04 }),
+  cell:  new THREE.MeshStandardMaterial({ color: 0xc7ccd6, roughness: 0.42, metalness: 0.68 }),
+  case:  new THREE.MeshStandardMaterial({ color: 0x39506b, roughness: 0.55, metalness: 0.22,
+                                          transparent: true, opacity: 0.30 }),
+  fpc:   new THREE.MeshStandardMaterial({ color: 0xc98a3c, roughness: 0.7, metalness: 0.1,
+                                          side: THREE.DoubleSide })
+};
+const PICKABLE = [];
+
+function box(w, h, d, mat, x, y, z, parent) {
+  const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat);
+  m.position.set(x, y, z);
+  (parent || root).add(m);
+  return m;
+}
+
+/* --- board --- */
+const boardGroup = new THREE.Group(); root.add(boardGroup);
+const board = box(BOARD_W, BOARD_T, BOARD_H, MAT.pcb, CX, Y.pcbBot + BOARD_T / 2, CZ, boardGroup);
+board.userData = { ref: 'PCB', val: '{{meta.pcb.material}}', note: '45 × 24 × 1.6 mm' };
+PICKABLE.push(board);
+
+/* gold pad ring around the edge for a bit of realism */
+[[0, 0], [0, BOARD_H], [BOARD_W, 0], [BOARD_W, BOARD_H]].forEach(([px, pz]) => {
+  const h = box(3.2, 0.06, 3.2, MAT.gold, px, 0.03, pz, boardGroup);
+  h.userData = { ref: 'M1.6', val: '{{meta.mount.val}}', note: '{{meta.mount.note}}' };
+  PICKABLE.push(h);
+});
+
+/* antenna keep-out: visibly empty strip at the module's antenna end */
+box(7.0, 0.05, 14.0, new THREE.MeshStandardMaterial({
+  color: 0x7a2f2f, roughness: 1, transparent: true, opacity: 0.30
+}), 3.5, 0.025, 12.0, boardGroup);
+
+/* --- placed components from placement.csv --- */
+const compGroup = new THREE.Group(); boardGroup.add(compGroup);
+
+function makePart(p) {
+  const h = Math.max(p.z, 0.25);
+  const isBtn = p.k === 'button';
+  const mat = (p.k === 'module' || p.k === 'ic') ? MAT.metal
+            : (p.k === 'inductor') ? MAT.dark
+            : (p.k === 'led') ? new THREE.MeshStandardMaterial({ color: 0x8be08b, roughness: .4, metalness: .1,
+                                                                 emissive: 0x2f6b2f })
+            : (p.k === 'conn') ? MAT.metal
+            : (p.k === 'switch') ? MAT.dark
+            : MAT.gold;
+
+  const g = new THREE.Group();
+  g.position.set(p.x, 0, p.y);
+
+  if (isBtn) {
+    const b = new THREE.Mesh(new THREE.CylinderGeometry(1.6, 1.6, p.z, 20), MAT.dark);
+    b.position.y = p.z / 2; g.add(b);
+    const r = new THREE.Mesh(new THREE.CylinderGeometry(1.15, 1.15, 0.5, 20), MAT.metal);
+    r.position.y = p.z + 0.2; g.add(r);
+  } else if (p.k === 'module') {
+    const b = box(p.w, h, p.h, MAT.metal, 0, h / 2, 0, g);
+    /* the antenna end: a darker strip at the board-edge side */
+    box(5.0, h + 0.06, p.h, MAT.dark, -p.w / 2 + 2.5, h / 2, 0, g);
+    /* castellations: a row of small pads down both long sides */
+    for (let i = 0; i < 7; i++) {
+      const zz = -p.h / 2 + 1.0 + i * (p.h - 2.0) / 6;
+      box(1.1, 0.1, 1.1, MAT.gold, -p.w / 2 + 0.55, h + 0.05, zz, g);
+      box(1.1, 0.1, 1.1, MAT.gold,  p.w / 2 - 0.55, h + 0.05, zz, g);
+    }
+  } else if (p.k === 'conn' && p.r === 'J2') {
+    box(p.w, h, p.h, MAT.metal, 0, h / 2, 0, g);
+    for (let i = 0; i < 24; i++) {
+      const xx = -p.w / 2 + 0.8 + i * (p.w - 1.6) / 23;
+      box(0.35, 0.1, 2.0, MAT.gold, xx, h + 0.05, 0, g);
+    }
+  } else if (p.k === 'conn') {
+    const b = box(p.w, h, p.h, MAT.metal, 0, h / 2, 0, g);
+    box(p.w - 1.6, h * 0.45, 1.0, MAT.dark, 0, h * 0.55, -p.h / 2 + 0.9, g);
+  } else if (p.k === 'inductor') {
+    box(p.w, h, p.h, MAT.dark, 0, h / 2, 0, g);
+    box(p.w + 0.2, 0.12, p.h * 0.28, MAT.gold, 0, 0.06, -p.h / 2 + p.h * 0.16, g);
+    box(p.w + 0.2, 0.12, p.h * 0.28, MAT.gold, 0, 0.06,  p.h / 2 - p.h * 0.16, g);
+  } else if (p.k === 'diode') {
+    box(p.w, h, p.h, MAT.dark, 0, h / 2, 0, g);
+    box(0.28, h + 0.06, p.h + 0.1, MAT.metal, -p.w / 2 + 0.9, h / 2, 0, g);
+  } else if (p.k === 'ic') {
+    box(p.w, h, p.h, MAT.dark, 0, h / 2, 0, g);
+    const n = (p.v === 'USBLC6-2SC6') ? 3 : 3;
+    for (let i = 0; i < n; i++) {
+      const zz = -p.h / 2 + 0.6 + i * (p.h - 1.2) / (n - 1 || 1);
+      box(0.7, 0.08, 0.5, MAT.gold, -p.w / 2 + 0.35, 0.04, zz, g);
+      box(0.7, 0.08, 0.5, MAT.gold,  p.w / 2 - 0.35, 0.04, zz, g);
+    }
+  } else if (p.k === 'switch') {
+    box(p.w, h, p.h, MAT.dark, 0, h / 2, 0, g);
+    box(1.2, h * 0.7, 1.2, MAT.metal, p.w * 0.25, h * 0.6, 0, g);
+  } else if (p.k === 'battery') {
+    /* solder pad only — the cell itself is its own layer */
+    box(p.w, 0.08, p.h, MAT.gold, 0, 0.04, 0, g);
+  } else {
+    box(p.w, h, p.h, mat, 0, h / 2, 0, g);
+    box(0.35, 0.06, p.h * 0.9, MAT.gold, -p.w / 2 + 0.18, 0.03, 0, g);
+    box(0.35, 0.06, p.h * 0.9, MAT.gold,  p.w / 2 - 0.18, 0.03, 0, g);
+  }
+
+  g.userData = { ref: p.r, val: p.v, note: p.g === 'passive' ? '{{meta.passive}}' : '{{meta.active}}' };
+  g.traverse(o => { o.userData = g.userData; PICKABLE.push(o); });
+  compGroup.add(g);
+}
+PARTS.forEach(makePart);
+
+/* --- panel glass + active area + bezel --- */
+const panelGroup = new THREE.Group(); root.add(panelGroup);
+box(GLASS_W, GLASS_T, GLASS_H, MAT.glass, CX, Y.panelBot + GLASS_T / 2, CZ, panelGroup);
+const active = box(48.55, 0.04, 23.71, new THREE.MeshStandardMaterial({
+  color: 0xf4f7fa, roughness: 0.96
+}), CX, Y.panelTop + 0.02, CZ, panelGroup);
+active.userData = { ref: 'E-PAPER', val: '2.13" 250×122', note: '{{meta.epaper.note}}' };
+PICKABLE.push(active);
+
+/* Sayfada birkaç satır metin izi — ekranın "okunuyor" gibi görünmesi için */
+(function pageLines() {
+  const inkMat = new THREE.MeshStandardMaterial({ color: 0x2a3340, roughness: 0.9 });
+  const greyMat = new THREE.MeshStandardMaterial({ color: 0x9aa6b4, roughness: 0.9 });
+  const x0 = CX - 48.55 / 2 + 3.4, w = 48.55 - 6.8;
+  /* üst kural + başlık */
+  box(w, 0.03, 0.5, inkMat, x0 + w / 2, Y.panelTop + 0.05, CZ - 8.6, panelGroup);
+  box(w * 0.42, 0.03, 1.1, inkMat, x0 + w * 0.21, Y.panelTop + 0.05, CZ - 7.2, panelGroup);
+  /* 6 satır metin, son satır kısa */
+  for (let i = 0; i < 6; i++) {
+    const lw = (i === 5) ? w * 0.46 : w * (0.94 + (i % 3) * 0.02) * (i === 0 ? 1 : 1);
+    box(Math.min(lw, w), 0.03, 0.42, i === 0 ? inkMat : greyMat,
+        x0 + Math.min(lw, w) / 2, Y.panelTop + 0.05, CZ - 4.6 + i * 2.1, panelGroup);
+  }
+  /* alt durum çubuğu: ilerleme + sayfa no */
+  box(w, 0.03, 0.35, greyMat, x0 + w / 2, Y.panelTop + 0.05, CZ + 9.4, panelGroup);
+  box(w * 0.31, 0.03, 0.5, inkMat, x0 + w * 0.155, Y.panelTop + 0.05, CZ + 10.3, panelGroup);
+})();
+
+const bezelGroup = new THREE.Group(); root.add(bezelGroup);
+(function bezel() {
+  const t = CASE_W, f = CASE_D, h = 1.2;
+  const win = 49.0, winD = 24.1;
+  const side = (w, d, x, z) => box(w, h, d, MAT.case, x, Y.bezelBot + h / 2, z, bezelGroup);
+  side(t, (f - winD) / 2, CX, CZ - winD / 2 - (f - winD) / 4);
+  side(t, (f - winD) / 2, CX, CZ + winD / 2 + (f - winD) / 4);
+  side((t - win) / 2, winD, CX - win / 2 - (t - win) / 4, CZ);
+  side((t - win) / 2, winD, CX + win / 2 + (t - win) / 4, CZ);
+})();
+
+/* --- FPC ribbon between panel and J2 --- */
+const fpcGroup = new THREE.Group(); root.add(fpcGroup);
+(function fpc() {
+  const j2 = PARTS.find(p => p.r === 'J2');
+  const curve = new THREE.CatmullRomCurve3([
+    new THREE.Vector3(CX + 6, Y.pcbTop + 0.3, CZ + 8),
+    new THREE.Vector3(CX + 6, 1.4, CZ + 11),
+    new THREE.Vector3(j2.x, 2.2, j2.y - 1),
+    new THREE.Vector3(j2.x, Y.pcbTop + 0.4, j2.y)
+  ]);
+  const m = new THREE.Mesh(new THREE.TubeGeometry(curve, 40, 0.45, 6, false), MAT.fpc);
+  m.scale.z = 0.5; fpcGroup.add(m);
+})();
+
+/* --- battery cell --- */
+const cellGroup = new THREE.Group(); root.add(cellGroup);
+const cell = box(CELL_W, CELL_T, CELL_H, MAT.cell, CX, Y.cellTop - CELL_T / 2, CZ, cellGroup);
+cell.userData = { ref: 'BT1', val: 'Li-Po 1S 500 mAh', note: '{{meta.cell.note}}' };
+PICKABLE.push(cell);
+
+/* --- lid --- */
+const lidGroup = new THREE.Group(); root.add(lidGroup);
+box(CASE_W, 1.6, CASE_D, MAT.case, CX, Y.lidTop - 0.8, CZ, lidGroup);
+
+/* ------------------------------------------------------------------ */
+/*  Kesit görünümü — kırpma düzlemi                                    */
+/*  Düzlem normali (-1,0,0), sabiti cutX  ⇒  x <= cutX olan kalır.     */
+/*  Yani modelin sağ yarısı atılır ve katman yığını kesitte görünür.  */
+/* ------------------------------------------------------------------ */
+renderer.localClippingEnabled = true;
+const clipPlane = new THREE.Plane(new THREE.Vector3(-1, 0, 0), CX);
+const ALL_MATS = new Set();
+root.traverse(o => { if (o.material) ALL_MATS.add(o.material); });
+let section = false;
+
+const cutMarkEl = document.getElementById('cutmark');
+const cutBadgeEl = document.getElementById('cutbadge');
+const cutEl = document.getElementById('cut');
+const cutInfoEl = document.getElementById('cutinfo');
+const CASE_X0 = CX - CASE_W / 2, CASE_X1 = CX + CASE_W / 2;
+
+function cutXFromSlider(v) { return CASE_X0 + (CASE_X1 - CASE_X0) * (v / 100); }
+
+function applySection() {
+  const cx = cutXFromSlider(Number(cutEl.value));
+  clipPlane.constant = cx;
+  ALL_MATS.forEach(m => {
+    m.clippingPlanes = section ? [clipPlane] : null;
+    /* kesitte iç yüzeyler de görünsün diye çift taraflı çizim */
+    m.side = section ? THREE.DoubleSide : THREE.FrontSide;
+    m.needsUpdate = true;
+  });
+  cutMarkEl.classList.toggle('on', section);
+  cutBadgeEl.classList.toggle('on', section);
+  cutEl.disabled = !section;
+  cutInfoEl.textContent = section
+    ? '{{cut.info.pre}}' + cx.toFixed(1) + '{{cut.info.mid}}' + (cx - CASE_X0).toFixed(1) + '{{cut.info.post}}'
+    : '{{cut.off}}';
+  cutBadgeEl.textContent = '{{cut.badge.pre}}' + cx.toFixed(1) + '{{cut.badge.post}}';
+}
+
+/* ------------------------------------------------------------------ */
+/*  Zaman çizelgesi — senaryolu tanıtım animasyonu                     */
+/*  Kamera ve patlatma anahtar karelerle tanımlanır; aradaki değerler  */
+/*  yumuşak geçişle hesaplanır. Döngü baştan başa sorunsuz olsun diye  */
+/*  son kare başlangıcın tam bir tur (yaw − 2π) ilerisindedir.        */
+/* ------------------------------------------------------------------ */
+const DEMO = [
+  { t: 0.00, ex: 0.00, yaw: -0.72,                pitch: 0.36, dist: 80,  name: '{{phase.assembled}}' },
+  { t: 0.15, ex: 0.00, yaw: 0.62,                 pitch: 0.30, dist: 78,  name: '{{phase.assembled}}' },
+  { t: 0.35, ex: 1.00, yaw: -0.62,                pitch: 0.26, dist: 112, name: '{{phase.opening}}' },
+  { t: 0.54, ex: 1.00, yaw: -2.30,                pitch: 0.17, dist: 118, name: '{{phase.layers}}' },
+  { t: 0.70, ex: 1.00, yaw: -3.95,                pitch: 0.24, dist: 112, name: '{{phase.layers}}' },
+  { t: 0.88, ex: 0.00, yaw: -4.95,                pitch: 0.34, dist: 84,  name: '{{phase.closing}}' },
+  { t: 1.00, ex: 0.00, yaw: -0.72 - Math.PI * 2, pitch: 0.36, dist: 80,  name: '{{phase.assembled}}' }
+];
+const DEMO_SECONDS = 28;
+let showT = 0, playing = false, phaseName = '{{phase.assembled}}';
+
+const smooth = u => u * u * (3 - 2 * u);
+function sampleDemo(t) {
+  for (let i = 0; i < DEMO.length - 1; i++) {
+    const a = DEMO[i], b = DEMO[i + 1];
+    if (t >= a.t && t <= b.t) {
+      const u = smooth((t - a.t) / (b.t - a.t || 1));
+      const lerp = (p, q) => p + (q - p) * u;
+      phaseName = u < 0.5 ? a.name : b.name;
+      return { ex: lerp(a.ex, b.ex), yaw: lerp(a.yaw, b.yaw),
+               pitch: lerp(a.pitch, b.pitch), dist: lerp(a.dist, b.dist) };
+    }
+  }
+  const l = DEMO[DEMO.length - 1];
+  return { ex: l.ex, yaw: l.yaw, pitch: l.pitch, dist: l.dist };
+}
+
+/* ------------------------------------------------------------------ */
+/*  Labels (HTML overlay, projected from 3D)                           */
+/* ------------------------------------------------------------------ */
+/* ox/oy = etiketin bağlantı noktasından ekran ofseti (px) — üst üste binmesin */
+const LABELS = [
+  { t: '{{label.bezel.t}}',      i: '{{label.bezel.i}}', p: [CX - CASE_W / 2 + 4, Y.bezelTop, CZ + CASE_D / 2 - 4], ox: -60, oy: -104 },
+  { t: '{{label.glass.t}}',    i: '{{label.glass.i}}',  p: [CX + 22, Y.panelTop, CZ - 12],                              ox: 104, oy: -34 },
+  { t: '{{label.esp32.t}}', i: '{{label.esp32.i}}', p: [8.3, 2.4, 12],                                              ox: -150, oy: 6 },
+  { t: '{{label.pcb.t}}',             i: '{{label.pcb.i}}',    p: [BOARD_W - 4, Y.pcbBot, BOARD_H - 4],                        ox: 128, oy: 18 },
+  { t: '{{label.cell.t}}',     i: '{{label.cell.i}}',       p: [CX - 14, Y.cellTop, CZ - 12],                               ox: -152, oy: 52 },
+  { t: '{{label.lid.t}}',      i: '{{label.lid.i}}',       p: [CX + 12, Y.lidBot, CZ + 10],                                ox: 92,  oy: 84 },
+  { t: '{{label.usb.t}}',           i: '{{label.usb.i}}',    p: [24.5, 3.2, 3.75],                                           ox: -84,  oy: -14 },
+  { t: '{{label.fpc.t}}',      i: '{{label.fpc.i}}',    p: [31, 2.0, 20.6],                                             ox: 26,  oy: -40 },
+  { t: '{{label.buttons.t}}',        i: '{{label.buttons.i}}', p: [42, 3.5, 11.5],                                             ox: 120, oy: -30 }
+];
+const labelBox = document.getElementById('labels');
+LABELS.forEach(L => {
+  const dot = document.createElement('div');
+  dot.className = 'labdot';
+  labelBox.appendChild(dot);
+  L.dot = dot;
+
+  const d = document.createElement('div');
+  d.className = 'lab';
+  d.innerHTML = L.t + '<br><i>' + L.i + '</i>';
+  labelBox.appendChild(d);
+  L.el = d;
+});
+
+/* ------------------------------------------------------------------ */
+/*  Orbit controls (own implementation — no extra dependency)          */
+/* ------------------------------------------------------------------ */
+const target = new THREE.Vector3(CX, 0.6, CZ);
+let camDist = 80, camYaw = -0.72, camPitch = 0.36;
+const HOME = { dist: camDist, yaw: camYaw, pitch: camPitch };
+let dragging = false, lastX = 0, lastY = 0;
+
+canvas.addEventListener('pointerdown', e => {
+  dragging = true; lastX = e.clientX; lastY = e.clientY;
+  canvas.setPointerCapture(e.pointerId);
+});
+canvas.addEventListener('pointerup', e => { dragging = false; });
+canvas.addEventListener('pointermove', e => {
+  if (!dragging) return;
+  camYaw   -= (e.clientX - lastX) * 0.007;
+  camPitch += (e.clientY - lastY) * 0.006;
+  camPitch = Math.max(-1.35, Math.min(1.35, camPitch));
+  lastX = e.clientX; lastY = e.clientY;
+});
+canvas.addEventListener('wheel', e => {
+  e.preventDefault();
+  camDist *= Math.exp(e.deltaY * 0.0011);
+  camDist = Math.max(45, Math.min(320, camDist));
+}, { passive: false });
+
+function placeCamera() {
+  const cy = Math.cos(camPitch), sy = Math.sin(camPitch);
+  camera.position.set(
+    target.x + camDist * cy * Math.sin(camYaw),
+    target.y + camDist * sy,
+    target.z + camDist * cy * Math.cos(camYaw)
+  );
+  camera.lookAt(target);
+}
+
+/* ------------------------------------------------------------------ */
+/*  Controls                                                           */
+/* ------------------------------------------------------------------ */
+let explode = 0;
+const exEl = document.getElementById('ex');
+exEl.addEventListener('input', () => { explode = exEl.value / 100; });
+
+const state = { case: true, labels: true, spin: false };
+document.querySelectorAll('#toggles button').forEach(b => {
+  b.addEventListener('click', () => {
+    const t = b.dataset.t;
+    state[t] = !state[t];
+    b.classList.toggle('on', state[t]);
+    bezelGroup.visible = state.case; lidGroup.visible = state.case;
+    labelBox.style.display = state.labels ? '' : 'none';
+  });
+});
+
+const VIEWS = {
+  iso:     { dist: 80,  yaw: -0.72, pitch: 0.36 },
+  front:   { dist: 74,  yaw: 0,     pitch: 0.04 },
+  back:    { dist: 74,  yaw: Math.PI, pitch: 0.04 },
+  side:    { dist: 74,  yaw: -Math.PI / 2, pitch: 0.05 },
+  top:     { dist: 72,  yaw: -0.001, pitch: 1.30 },
+  explode: { dist: 112, yaw: -0.62, pitch: 0.26, ex: 1 }
+};
+let anim = null;
+document.querySelectorAll('#views button').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('#views button').forEach(o => o.classList.remove('on'));
+    b.classList.add('on');
+    const v = VIEWS[b.dataset.v];
+    anim = { t: 0, from: { dist: camDist, yaw: camYaw, pitch: camPitch, ex: explode },
+             to: { dist: v.dist, yaw: v.yaw, pitch: v.pitch, ex: v.ex === undefined ? explode : v.ex } };
+    if (v.ex !== undefined) { exEl.value = v.ex * 100; }
+  });
+});
+
+/* ------------------------------------------------------------------ */
+/*  Zaman çizelgesi + kesit kontrolleri                                */
+/* ------------------------------------------------------------------ */
+const playBtn = document.getElementById('play');
+const trackEl = document.getElementById('track');
+const fillEl  = document.getElementById('fill');
+const knobEl  = document.getElementById('knob');
+const phaseEl = document.getElementById('phase');
+const tlabelEl = document.getElementById('tlabel');
+
+function setPlaying(on) {
+  playing = on;
+  playBtn.textContent = on ? '❚❚' : '▶';
+  playBtn.classList.toggle('playing', on);
+  playBtn.title = on ? '{{btn.pause.title}}' : '{{btn.play.title}}';
+}
+/* Kullanıcı elle müdahale ederse oynatma durur */
+function pause() { if (playing) setPlaying(false); }
+
+playBtn.addEventListener('click', () => {
+  if (!playing && showT >= 1) showT = 0;
+  setPlaying(!playing);
+});
+
+function seekFromEvent(e) {
+  const r = trackEl.getBoundingClientRect();
+  showT = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width));
+  const k = sampleDemo(showT);
+  explode = k.ex; camYaw = k.yaw; camPitch = k.pitch; camDist = k.dist;
+  exEl.value = explode * 100;
+  updateTimelineUI();
+}
+let scrubbing = false;
+trackEl.addEventListener('pointerdown', e => {
+  pause(); scrubbing = true;
+  trackEl.setPointerCapture(e.pointerId);
+  seekFromEvent(e);
+});
+trackEl.addEventListener('pointermove', e => { if (scrubbing) seekFromEvent(e); });
+trackEl.addEventListener('pointerup', () => { scrubbing = false; });
+
+function updateTimelineUI() {
+  const pct = showT * 100;
+  fillEl.style.width = pct + '%';
+  knobEl.style.left = pct + '%';
+  phaseEl.textContent = phaseName;
+  tlabelEl.textContent = (showT * DEMO_SECONDS).toFixed(1) + ' s / '
+                        + DEMO_SECONDS + ' s';
+}
+
+/* Kesit */
+document.getElementById('secbtn').addEventListener('click', ev => {
+  section = !section;
+  ev.currentTarget.classList.toggle('on', section);
+  ev.currentTarget.style.color = section ? 'var(--accent)' : 'var(--muted)';
+  ev.currentTarget.style.borderColor = section ? 'var(--accent)' : 'var(--line)';
+  if (section) {
+    /* Kesit görünüşü: sağ yarı atıldığı için kesilen yüzeye +X'ten bakılır,
+       ve katmanların ayrık olmaması gerekir. */
+    pause();
+    showT = 0; updateTimelineUI();
+    exEl.value = 0;
+    document.querySelectorAll('#views button').forEach(o => o.classList.remove('on'));
+    anim = { t: 0,
+             from: { dist: camDist, yaw: camYaw, pitch: camPitch, ex: explode },
+             to:   { dist: 66, yaw: Math.PI / 2, pitch: 0.10, ex: 0 } };
+  }
+  applySection();
+});
+cutEl.addEventListener('input', applySection);
+applySection();
+updateTimelineUI();
+
+/* Sürükleme / tekerlek oynatmayı durdurur */
+canvas.addEventListener('pointerdown', pause);
+canvas.addEventListener('wheel', pause, { passive: true });
+exEl.addEventListener('input', () => { pause(); showT = 0; updateTimelineUI(); });
+
+/* ------------------------------------------------------------------ */
+/*  Picking                                                            */
+/* ------------------------------------------------------------------ */
+const ray = new THREE.Raycaster();
+const pickEl = document.getElementById('pick');
+
+/* Parça değerlerinin (PARTS[].v) dile göre karşılığı. Yalnızca insan
+   tarafından okunan değerler eşlenir; sözlükte olmayan değer (direnç, kapasite
+   gibi spec'ler) olduğu gibi geçer. */
+const PART_VALUE_I18N = {
+  'taktil': '{{part.value.tactile}}',
+  'SPDT kayar': '{{part.value.spdt}}',
+  'yesil LED': '{{part.value.led}}'
+};
+let down = null;
+canvas.addEventListener('pointerdown', e => { down = [e.clientX, e.clientY]; });
+canvas.addEventListener('pointerup', e => {
+  if (!down || Math.hypot(e.clientX - down[0], e.clientY - down[1]) > 5) return;
+  const r = canvas.getBoundingClientRect();
+  const ndc = new THREE.Vector2(
+    ((e.clientX - r.left) / r.width) * 2 - 1,
+    -((e.clientY - r.top) / r.height) * 2 + 1
+  );
+  ray.setFromCamera(ndc, camera);
+  const hit = ray.intersectObjects(PICKABLE, false)[0];
+  if (hit && hit.object.userData.ref) {
+    const u = hit.object.userData;
+    pickEl.innerHTML = u.ref + ' <span>{{pick.sep}} ' + (PART_VALUE_I18N[u.val] || u.val) + (u.note ? ' {{pick.sep}} ' + u.note : '') + '</span>';
+    pickEl.classList.add('show');
+    clearTimeout(pickEl._t);
+    pickEl._t = setTimeout(() => pickEl.classList.remove('show'), 4200);
+  }
+});
+
+/* ------------------------------------------------------------------ */
+/*  Resize + loop                                                      */
+/* ------------------------------------------------------------------ */
+function resize() {
+  const w = canvas.clientWidth, h = canvas.clientHeight;
+  if (canvas.width !== w * renderer.getPixelRatio() || canvas.height !== h * renderer.getPixelRatio()) {
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+  }
+}
+const tmp = new THREE.Vector3();
+function updateLabels() {
+  if (!state.labels) return;
+  const w = canvas.clientWidth, h = canvas.clientHeight;
+  LABELS.forEach(L => {
+    tmp.set(L.p[0], L.p[1], L.p[2]).project(camera);
+    const visible = tmp.z < 1;
+    const ax = (tmp.x * 0.5 + 0.5) * w, ay = (-tmp.y * 0.5 + 0.5) * h;
+    L.el.style.opacity = visible ? 1 : 0;
+    L.dot.style.opacity = visible ? 1 : 0;
+    L.el.style.left = (ax + (L.ox || 0)) + 'px';
+    L.el.style.top  = (ay + (L.oy || 0)) + 'px';
+    L.dot.style.left = ax + 'px';
+    L.dot.style.top  = ay + 'px';
+    L.el.classList.toggle('hot', explode > 0.15);
+    L.dot.classList.toggle('hot', explode > 0.15);
+  });
+}
+let lastT = 0;
+function tick(now) {
+  requestAnimationFrame(tick);
+  const nowMs = (now === undefined) ? performance.now() : now;
+  const dt = lastT ? Math.min(0.05, (nowMs - lastT) / 1000) : 0;
+  lastT = nowMs;
+  resize();
+
+  if (anim) {
+    anim.t = Math.min(1, anim.t + 0.045);
+    const e = 1 - Math.pow(1 - anim.t, 3);
+    camDist  = anim.from.dist  + (anim.to.dist  - anim.from.dist)  * e;
+    camYaw   = anim.from.yaw   + (anim.to.yaw   - anim.from.yaw)   * e;
+    camPitch = anim.from.pitch + (anim.to.pitch - anim.from.pitch) * e;
+    explode  = anim.from.ex    + (anim.to.ex    - anim.from.ex)    * e;
+    exEl.value = explode * 100;
+    if (anim.t >= 1) anim = null;
+  } else if (playing) {
+    showT = (showT + dt / DEMO_SECONDS) % 1;
+    const k = sampleDemo(showT);
+    explode = k.ex; camYaw = k.yaw; camPitch = k.pitch; camDist = k.dist;
+    exEl.value = explode * 100;
+    updateTimelineUI();
+  } else if (state.spin) {
+    camYaw += 0.35 * dt;
+  }
+
+  /* explode offsets */
+  boardGroup.position.y   = SPREAD.pcb * explode;
+  compGroup.position.y    = SPREAD.pcb * explode;
+  panelGroup.position.y   = SPREAD.panel * explode;
+  bezelGroup.position.y   = SPREAD.bezel * explode;
+  fpcGroup.position.y     = SPREAD.fpc * explode;
+  cellGroup.position.y    = SPREAD.cell * explode;
+  lidGroup.position.y     = SPREAD.lid * explode;
+
+  placeCamera();
+  renderer.render(scene, camera);
+  updateLabels();
+}
+tick();
+</script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+.pio/
+.vscode/
+data/fonts/*.epf
+data/books/*.epr
+*.bin
+*.elf
+*.map
