@@ -1,5 +1,7 @@
 <div align="center">
 
+[![build](https://github.com/niyoseris/pocket-ebook-reader/actions/workflows/build.yml/badge.svg)](https://github.com/niyoseris/pocket-ebook-reader/actions/workflows/build.yml)
+
 # Pocket Reader
 
 **An open-source e-ink ebook reader you can carry in a pocket.**
@@ -313,8 +315,13 @@ standby, **12 months** (TPS63020) or **24 months** (TPS63900).
 This project is **designed and documented, but has never been physically built
 or tested.** Take it as it is:
 
-- **Compiled:** no. The firmware was not put through a compiler while this
-  repository was being prepared. The first `pio run` may need small fixes.
+- **Compiled:** yes. Both hardware targets build in CI
+  (`esp32-c3-devkitm-1` and `seeed_xiao_esp32c3`), producing a 915–926 KB
+  `firmware.bin`. Getting there took three fixes that only a compiler could
+  find — see errors 13–15 in [`CHANGELOG.md`](CHANGELOG.md). All fifteen are
+  listed there.
+- **Run on hardware:** no. Compiling is not the same as working. Nothing has
+  ever been flashed to a real device.
 - **Tested:** `cd tools && python3 -m unittest discover -s tests` → **66 tests,
   all passing.** Twelve of them (`.epf` interop) parse the firmware source at
   runtime and assert that both halves of the font format follow the *same* rules;

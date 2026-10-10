@@ -89,7 +89,7 @@ physical hardware.**
 
 ### Fixed (errors found during verification)
 
-**Twelve errors** were found and fixed before this release was published —
+**Fifteen errors** were found and fixed before this release was published —
 none of them on real hardware, all of them by pointing documentation,
 arithmetic and cross-checks at the design. They fall into three groups.
 
@@ -132,6 +132,19 @@ the device boots, nothing crashes, but the result would have been broken:
 Error 12 arose from two different agents writing the two halves of the same
 binary format — which is why `test_epf_interop.py` now parses the firmware source
 at runtime and tests **the other side's** rule rather than its own assumption.
+
+#### 4. Errors only a compiler could find (3)
+
+These surfaced the first time the firmware was actually built, in CI. Nothing
+else would have found them — not review, not reading the datasheet, not a test.
+The project had been documented for weeks as "never compiled", which is exactly
+the state they were hiding in.
+
+| # | Finding | What it did | Fix |
+|---|---|---|---|
+| 13 | `BTN_UP`, `BTN_DOWN` and `BTN_MENU` were defined **twice**: as pin macros in `config.h` and as enum members in `buttons.h` | The preprocessor rewrote the enum members into numbers, so the enum did not parse and `buttons.cpp` did not compile at all | Pins keep the `BTN_` prefix; the button events are now `EV_UP` / `EV_DOWN` / `EV_MENU` / `EV_ANY_WAKE`. Two naming spaces, because they are two different things |
+| 14 | The whole deep-sleep wake path was written against the **ESP32-classic ext1 API** | `SOC_PM_SUPPORT_EXT_WAKEUP` is undefined for the ESP32-C3, so `esp_sleep_enable_ext1_wakeup()`, `esp_sleep_get_ext1_wakeup_status()` and `ESP_SLEEP_WAKEUP_EXT1` are all absent. The C3 wakes through a separate GPIO deep-sleep block with its own entry points and its own wakeup cause | Switched to `esp_deep_sleep_enable_gpio_wakeup()`, `esp_sleep_get_gpio_wakeup_status()` and `ESP_SLEEP_WAKEUP_GPIO`. The `ESP_EXT1_WAKEUP_ANY_LOW` compatibility shim was deleted — it was papering over a naming difference on an API this chip never had |
+| 15 | `docs/04` told easy-build readers that **external pull-ups were not needed** | IDF's GPIO wakeup does arm internal pull resistors, but its own note *strongly recommends* external ones for a low-level wakeup, and warns that internal and external together interfere. The failure mode is the unpleasant one: the device wakes intermittently | The three 100 kΩ resistors are now a required line in the easy build's bill of materials, with the failure mode stated plainly |
 
 The power budget calculation was also fixed: the first design said
 "1,300,000 pages per page turn"; the correct one is a realistic model in which

@@ -95,8 +95,8 @@ new contributors: 🟢 easy + high-impact items.
 
 ### Errors found and fixed during verification
 
-While this repo was being prepared, **twelve errors** were found in the first
-design and fixed. None of them on real hardware. They fall into three groups and
+While this repo was being prepared, **fifteen errors** were found in the first
+design and fixed. None of them on real hardware. They fall into four groups and
 stand here as a record.
 
 **Six came from reading the official datasheets** against assumptions that had
@@ -129,6 +129,11 @@ device booting, but both of which corrupt the result:
 |---|---|---|
 | The `.epr` converter **was deleting every paragraph end** | Every converted book appeared as a single long paragraph | The unconditional trim inside `add_block` was reduced to chapter starts only + 6 regression tests |
 | The reference point of the `.epf` `top` field **differed** between the two sides | The firmware assumed `top` was measured from the baseline; because the error varied per glyph, **the text was spread out vertically** | `y0 = baseline_y - (ascent - top) * scale`; `tools/tests/test_epf_interop.py` compares the two halves at edge-case widths |
+
+**And three were found by the compiler**, the first time the firmware was
+actually built in CI — including a macro and an enum member sharing the name
+`BTN_UP`, and a deep-sleep wake path written against the ESP32-classic ext1 API,
+which the ESP32-C3 does not have. `CHANGELOG.md` lists all fifteen.
 
 The second bug arose from **two different agents writing the two halves of the same
 binary format.** That is why `test_epf_interop.py` no longer tests its own
