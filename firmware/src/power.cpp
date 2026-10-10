@@ -4,6 +4,7 @@
 
 #include "power.h"
 #include "epd.h"
+#include "buttons.h"   /* BTN_MASK_UP / _DOWN / _MENU */
 #include <WiFi.h>
 #include "driver/rtc_io.h"
 #include "esp_sleep.h"
@@ -167,16 +168,24 @@ void enterDeepSleep(uint64_t wake_mask) {
         /* esp_sleep_enable_ext1_wakeup() is the current IDF name for the
          * function the vendor examples call esp_deep_sleep_enable_ext1_wakeup()
          * -- same signature, same mask, no deprecation warning on IDF 5.x.
-         * Mask = GPIO2 | GPIO3 (UP/DOWN), active LOW. The RTC domain needs its
-         * own pull-ups armed: the digital-domain pull-ups are gone once the
-         * chip powers down. */
+         * Mask = GPIO2 | GPIO3 (UP/DOWN), active LOW.
+         *
+         * IMPORTANT -- ESP32-C3 has no RTCIO subsystem (SOC_RTCIO_PIN_COUNT is
+         * 0) and IDF declares no gpio_sleep_* API for it, so rtc_gpio_pullup_en()
+         * does not exist on this chip and the chip CANNOT hold an internal
+         * pull-up while it is in deep sleep. The wake pin has to be held at its
+         * inactive level by an EXTERNAL resistor -- that is exactly why the
+         * schematic puts 100k to 3V3 on all three buttons. Without them the pin
+         * floats in sleep and the device wakes unreliably. See docs/04.
+         *
+         * All we can do here is arm the digital pull for the awake period. */
         if (wake_mask & (1ULL << BTN_UP)) {
-            rtc_gpio_pullup_en((gpio_num_t)BTN_UP);
-            rtc_gpio_pulldown_dis((gpio_num_t)BTN_UP);
+            gpio_pullup_en((gpio_num_t)BTN_UP);
+            gpio_pulldown_dis((gpio_num_t)BTN_UP);
         }
         if (wake_mask & (1ULL << BTN_DOWN)) {
-            rtc_gpio_pullup_en((gpio_num_t)BTN_DOWN);
-            rtc_gpio_pulldown_dis((gpio_num_t)BTN_DOWN);
+            gpio_pullup_en((gpio_num_t)BTN_DOWN);
+            gpio_pulldown_dis((gpio_num_t)BTN_DOWN);
         }
         esp_sleep_enable_ext1_wakeup(wake_mask, ESP_EXT1_WAKEUP_ANY_LOW);
     }

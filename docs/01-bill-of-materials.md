@@ -23,6 +23,8 @@ A soldering iron and ~1 hour are enough. Easy to debug, low portability.
 | 6 | Wire | 30 AWG silicone-coated, female-female jumper | 1 | $2 | |
 | 7 | Header | 2.54 mm female header strip | 1 | $0.5 | For the XIAO and the e-paper module |
 | 8 | Switch | Small SPDT slide switch | 1 | $0.5 | Power switch |
+| 9 | Pull-up resistors | 100 kΩ, 1/4 W | **3** | $0.1 | **Required.** ESP32-C3 cannot hold an internal pull-up in deep sleep — without these the device wakes unreliably. See [`docs/04`](04-assembly.md) §1.3 |
+| 10 | Capacitors | 100 nF ceramic | 3 | $0.1 | Optional here, but recommended: cleans the button line at the instant of waking |
 | | | | | **~$34** | |
 
 **Critical warning:** The XIAO ESP32-C3 has its own charging circuit (380 mA fast /

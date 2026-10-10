@@ -62,10 +62,22 @@ One leg of each button to a GPIO, the other to GND:
 | `SW3` | `D0` | 2 | Page forward |
 | `SW4` | `D7` | 20 | Menu / library |
 
-In the easy build **external pull-ups and capacitors are not needed** — the
-firmware enables the internal pull-ups (`INPUT_PULLUP`) and uses software
-debounce. The PCB build has the external 100 kΩ + 100 nF because there the goal is
-a clean line **at the moment of waking**.
+**You must fit external pull-ups — this is not optional.** Add a 100 kΩ resistor
+from each button's GPIO to 3V3 (three resistors). A 100 nF capacitor from the
+GPIO to GND is optional here but recommended, for the same reason the PCB has it.
+
+The reason is a hardware limitation of the chip, not a preference: **ESP32-C3 has
+no RTCIO subsystem** (`SOC_RTCIO_PIN_COUNT` is 0), and ESP-IDF declares no
+`gpio_sleep_*` API for it either. There is therefore no way for the firmware to
+hold an internal pull-up while the chip is in deep sleep — `rtc_gpio_pullup_en()`
+does not exist on this part. The digital pull that `INPUT_PULLUP` configures is
+powered down with the rest of the digital domain, so in sleep the button pin
+would float. A floating wake pin means the device wakes unreliably, or not at
+all, and the symptom is intermittent — the worst kind to debug.
+
+The PCB build has the 100 kΩ + 100 nF for exactly the same reason, and the
+capacitor additionally cleans the line at the instant of waking, before the
+software debounce is running.
 
 ### 1.4 Power
 
