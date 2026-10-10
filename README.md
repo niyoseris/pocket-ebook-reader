@@ -345,9 +345,13 @@ or tested.** Take it as it is:
   single line.
 - **Before making your own PCB** run `hardware/schematic/gen_netlist.py --check`;
   it lists the missing pin numbers.
-- Six design errors found and fixed during datasheet verification are recorded in
-  [`CHANGELOG.md`](CHANGELOG.md) — including a wrong regulator package, a false
-  pin-compatibility claim, and a missed external ±15 V boost requirement.
+- **Fifteen errors** found and fixed during verification are recorded in
+  [`CHANGELOG.md`](CHANGELOG.md), grouped by how they were found: six by reading
+  datasheets against unchecked assumptions, four by geometry validators, two by
+  cross-checks between the two halves of a binary format, and three by the
+  compiler. They include a wrong regulator package, a false pin-compatibility
+  claim, a missed external ±15 V boost requirement, and a case that was smaller
+  than its own screen.
 
 ---
 
