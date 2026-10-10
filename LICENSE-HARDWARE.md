@@ -71,7 +71,7 @@ If you manufacture, modify or distribute the design:
 
 ```
 Pocket Reader — open-source e-ink reader
-https://github.com/<user>/pocket-eink-reader
+https://github.com/niyoseris/pocket-ebook-reader
 Licence: CERN-OHL-S-2.0
 Modified version — derived from the original project.
 ```

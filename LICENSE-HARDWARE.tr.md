@@ -71,7 +71,7 @@ Tasarımı üretir, değiştirir veya dağıtırsanız:
 
 ```
 Pocket Reader — açık kaynak e-mürekkep okuyucu
-https://github.com/<kullanıcı>/pocket-eink-reader
+https://github.com/niyoseris/pocket-ebook-reader
 Lisans: CERN-OHL-S-2.0
 Değiştirilmiş sürüm — orijinal projeden türetilmiştir.
 ```
