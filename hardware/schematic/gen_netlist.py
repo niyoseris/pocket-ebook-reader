@@ -47,12 +47,13 @@ UNVERIFIED = "UNVERIFIED"
 COMPONENTS: dict[str, tuple[str, str, str]] = {
     # --- USB-C input and ESD ---
     "J1": ("USB-C 16P", "Connector_USB:USB_C_Receptacle_HRO_TYPE-C-31-M-12",
-           f"USB-C female socket, sink only (UFP). Pin numbers {UNVERIFIED}"),
+           "USB-C female socket, sink only (UFP). 16-contact R/A SMT, "
+           "HRO TYPE-C-31-M-12 (GND=A1,A12,B1,B12 VBUS=A4,A9,B4,B9)"),
     "R1": ("5.1k", "Resistor_SMD:R_0805_2012Metric",
            "5.1k for CC1. Each CC pin needs its OWN resistor (UFP definition)"),
     "R2": ("5.1k", "Resistor_SMD:R_0805_2012Metric", "5.1k for CC2"),
     "U1": ("USBLC6-2SC6", "Package_TO_SOT_SMD:SOT-23-6",
-           f"USB D+/D- ESD protection. Pinout {UNVERIFIED}"),
+           "USB D+/D- ESD protection. SOT23-6L: I/O1=1,6 I/O2=3,4 GND=2 VBUS=5"),
 
     # --- Charging ---
     "U2": ("MCP73831T-2ACI/OT", "Package_TO_SOT_SMD:SOT-23-5",
@@ -136,7 +137,10 @@ COMPONENTS: dict[str, tuple[str, str, str]] = {
     "D2": ("MBR0530", "Diode_SMD:D_SOD-123", "Panel boost Schottky"),
     "D3": ("MBR0530", "Diode_SMD:D_SOD-123", "Panel boost Schottky"),
     "D4": ("MBR0530", "Diode_SMD:D_SOD-123", "Panel boost Schottky"),
-    "Q2": ("Si1308EDL", "Package_TO_SOT_SMD:SOT-23", "Panel boost N-MOSFET (drives the GDR pin)"),
+    "Q2": ("Si1308EDL", "Package_TO_SOT_SMD:SOT-323_SC-70",
+           "Panel boost N-MOSFET (drives the GDR pin). The real Vishay Si1308EDL is "
+           "SOT-323/SC-70 (3 leads), NOT SOT-23 -- datasheet 63399 Rev C, page 1. Ordering "
+           "code Si1308EDL-T1-GE3"),
     "C23": ("4.7uF/25V", "Capacitor_SMD:C_0805_2012Metric", "Panel boost capacitor 1/2"),
     "C24": ("1uF/25V", "Capacitor_SMD:C_0805_2012Metric", "Panel boost capacitor 2/2"),
     "R18": ("1M", "Resistor_SMD:R_0603_1608Metric", "Panel boost resistor 1/2"),
@@ -204,10 +208,32 @@ PINMAP: dict[str, dict[str, str | None]] = {
            "VSH1": "20", "VGH": "21", "VSL": "22", "VGL": "23", "VCOM": "24",
            "NC1": "1", "NC4": "4", "TSCL": "6", "TSDA": "7", "VPP": "19"},
 
-    # --- UNVERIFIED — those that still need to be completed ---
-    "J1": {"VBUS": None, "GND": None, "CC1": None, "CC2": None, "D+": None, "D-": None},
-    "U1": {"I/O1": None, "I/O2": None, "GND": None, "VBUS": None},
-    "Q2": {"G": None, "S": None, "D": None},   # Si1308EDL SOT-23
+    # --- J1 HRO TYPE-C-31-M-12 (USB-C 16P) — VERIFIED ---
+    #     Official HRO drawing "USB TYPE C 16Pin R/A 90° SMT",
+    #     PART NO. TYPE-C-31-M-12, sheet 1 of 4, PIN / SIGNAL NAME table —
+    #     https://en.krhro.com/Product-Details/726.html (drawing PDF linked there)
+    #     GND and VBUS are four-pad groups and D+/D- appear on two pads each
+    #     (reversible plug), so every member of each group is written here.
+    #     SHIELD = the shell/retention pads (pad name "S1" in the footprint).
+    "J1": {"VBUS": "A4,A9,B4,B9", "GND": "A1,A12,B1,B12", "SHIELD": "S1",
+           "CC1": "A5", "CC2": "B5", "D+": "A6,B6", "D-": "A7,B7"},
+
+    # --- U1 USBLC6-2SC6 SOT23-6L — VERIFIED (Doc ID 11265 Rev 5, Figure 1) ---
+    #     ST "Very low capacitance ESD protection" datasheet, Figure 1
+    #     "Functional diagram (top view)", p.1 —
+    #     https://datasheet.octopart.com/USBLC62SC6-STMicroelectronics-datasheet-10412581.pdf
+    #     (identical ST document; www.st.com was unreachable from this host).
+    #     Each protected line is internally on TWO pins so the current splits:
+    #     I/O1 = 1 and 6, I/O2 = 3 and 4, GND = 2, VBUS = 5.
+    "U1": {"I/O1": "1,6", "I/O2": "3,4", "GND": "2", "VBUS": "5"},
+
+    # --- Q2 Si1308EDL — VERIFIED (Vishay document 63399 Rev. C, p.1) ---
+    #     Vishay Si1308EDL datasheet, page-1 pin diagram (Top View):
+    #     1 = G, 2 = S, 3 = D —
+    #     https://www.vishay.com/docs/63399/si1308edl.pdf
+    #     NOTE: the genuine Vishay part is SOT-323 / SC-70 (3 leads), NOT SOT-23
+    #     (see pinouts.md Section 5.5) — the pin NUMBERS are the same either way.
+    "Q2": {"G": "1", "S": "2", "D": "3"},
 }
 
 # --------------------------------------------------------------------------
@@ -232,7 +258,8 @@ NETS: list[tuple[str, str, list[tuple[str, str, str]]]] = [
         ("R13", "1", ""), ("R14", "1", ""), ("R15", "1", ""),
     ]),
     ("GND", "power", [
-        ("J1", "GND", "USB-C ground and chassis"),
+        ("J1", "GND", "USB-C ground (A1,A12,B1,B12)"),
+        ("J1", "SHIELD", "USB-C shell / chassis (pad S1, 4 retention legs)"),
         ("U1", "GND", "ESD diode ground"),
         ("R1", "2", "CC1 5.1k -> GND"),
         ("R2", "2", "CC2 5.1k -> GND"),

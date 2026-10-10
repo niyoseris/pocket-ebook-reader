@@ -345,8 +345,8 @@ or tested.** Take it as it is:
   single line.
 - **Before making your own PCB** run `hardware/schematic/gen_netlist.py --check`;
   it lists the missing pin numbers.
-- **Fifteen errors** found and fixed during verification are recorded in
-  [`CHANGELOG.md`](CHANGELOG.md), grouped by how they were found: six by reading
+- **Sixteen errors** found and fixed during verification are recorded in
+  [`CHANGELOG.md`](CHANGELOG.md), grouped by how they were found: seven by reading
   datasheets against unchecked assumptions, four by geometry validators, two by
   cross-checks between the two halves of a binary format, and three by the
   compiler. They include a wrong regulator package, a false pin-compatibility

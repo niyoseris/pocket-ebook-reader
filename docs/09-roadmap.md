@@ -95,7 +95,7 @@ new contributors: 🟢 easy + high-impact items.
 
 ### Errors found and fixed during verification
 
-While this repo was being prepared, **fifteen errors** were found in the first
+While this repo was being prepared, **sixteen errors** were found in the first
 design and fixed. None of them on real hardware. They fall into four groups and
 stand here as a record.
 

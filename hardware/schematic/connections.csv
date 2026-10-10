@@ -18,7 +18,8 @@ Net,Class,RefDes,Pin,Description
 3V3,power,R13,1,
 3V3,power,R14,1,
 3V3,power,R15,1,
-GND,power,J1,GND,USB-C ground and chassis
+GND,power,J1,GND,"USB-C ground (A1,A12,B1,B12)"
+GND,power,J1,SHIELD,"USB-C shell / chassis (pad S1, 4 retention legs)"
 GND,power,U1,GND,ESD diode ground
 GND,power,R1,2,CC1 5.1k -> GND
 GND,power,R2,2,CC2 5.1k -> GND

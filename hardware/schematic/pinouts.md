@@ -19,6 +19,9 @@ The sources **actually downloaded and read** while this file was being prepared:
 - https://www.content.molex.com/dxdam/44/4456adc5-f3af-4b82-86d4-5ad8260d8178/987651-8371.pdf — Molex Easy-On FBH1 (503480) 0.50 mm FFC/FPC connector catalogue.
 - https://media.digikey.com/pdf/Data%20Sheets/Hirose%20PDFs/FH12_Rev2018.pdf — Hirose **FH12** series 0.5 mm FFC/FPC connector catalogue.
 - https://www.xfconn.com/uploads/soft/20240925/4-2409251I415K5.pdf — XFCN 16-pin USB Type-C receptacle drawing (bottom-mount, 0.5 mm).
+- https://datasheet.octopart.com/USBLC62SC6-STMicroelectronics-datasheet-10412581.pdf — ST Microelectronics **USBLC6-2** (USBLC6-2SC6 / -2P6) datasheet, **Doc ID 11265 Rev 5** (October 2011). This is the ST document itself; `www.st.com` could not be reached from the host that prepared this file and the same PDF (identical ST Doc ID 11265 Rev 5) was read from this distributor mirror. Canonical ST URL: https://www.st.com/content/ccc/resource/technical/document/datasheet/06/1d/48/9c/6c/20/4a/b2/CD00050750.pdf/files/CD00050750.pdf
+- https://www.vishay.com/docs/63399/si1308edl.pdf — Vishay Siliconix **Si1308EDL** N-Channel 30 V (D-S) MOSFET datasheet, **Document Number 63399, Rev. C (06-Oct-14)**.
+- https://en.krhro.com/Product-Details/726.html — Korean Hroparts (HRO) **TYPE-C-31-M-12** USB Type-C 16-pin receptacle product page, which links the official drawing "USB TYPE C 母座 16Pin R/A 90° SMT", PART NO. TYPE-C-31-M-12, drawing sheet 1 of 4 (the M-12/12A/12B/12C PDF). The drawing PDF read was https://omo-oss-file110.thefastfile.com/portal-saas/pg2026081913505947704/cms/file/type-c-31-m-12&12a&12b&12c(1).pdf (linked from that page).
 
 ## Unverified information
 
@@ -27,7 +30,8 @@ The sources **actually downloaded and read** while this file was being prepared:
 - **The package of the TPS63020.** The coordinator's note said "VSON-10"; however the datasheet clearly states it is a **14-pin VSON (DSJ)** (SLVS916I, Section 3 & Section 5). See Sections 4 and 6.
 - **Whether the ESP32-C3-MINI-1 3V3 decoupling values are an official written recommendation.** `UNVERIFIED` (partially). The datasheet text does not contain a separate "recommended decoupling" sentence; the values **C1 = 10 µF + C2 = 0.1 µF** were read from **Peripheral Schematics (Figure 9-1)**, not from a written recommendation.
 - **The one-to-one byte mapping of the 2.13" panel's 122 columns to the SSD1680 RAM (16 bytes/row, X window 0–15).** `UNVERIFIED`. Neither the GDEY0213B74 nor the SSD1680 datasheet writes these window values verbatim; the SSD1680 datasheet says the RAM is byte-addressed and 176/8 = 22 bytes wide. The 16 bytes/row value is derived from 122/8 → 16; it must be verified by hand in the driver code.
-- **The exact USB-C receptacle ordering code.** `UNVERIFIED`. The **XFCN TPS10-N1F1-2016-A** bottom-mount 16-pin drawing that was found is verified, but the manufacturer's standing as an official "datasheet" and its stock status have not been confirmed. The **5.1 kΩ CC pull-down** rule is the USB Type-C UFP/sink standard (given below with its source).
+- **The exact USB-C receptacle ordering code.** `RESOLVED` (pin assignment) / `UNVERIFIED` (procurement). The design uses the **HRO TYPE-C-31-M-12** 16-pin receptacle; its contact assignment is now taken from the manufacturer's own drawing and is recorded in **Section 5.3**. What remains unverified is only **procurement**: this part name is heavily cloned, so pad geometry and the exact ordered variant (M-12 vs 12A/12B/12C) still have to be checked against the vendor drawing at purchase time. The **5.1 kΩ CC pull-down** rule is the USB Type-C UFP/sink standard (given below with its source).
+- **The package of Q2 (Si1308EDL) versus the PCB footprint.** `UNVERIFIED` (design decision). The genuine **Vishay Si1308EDL** is **SOT-323 / SC-70 (3 leads)**, not the SOT-23 the design's `Package_TO_SOT_SMD:SOT-23` footprint assumes — see **Section 5.5**. **Fixed:** the footprint is now `Package_TO_SOT_SMD:SOT-323_SC-70`, matching the genuine part. The pin *numbers* were identical either way (1 = G, 2 = S, 3 = D), so the netlist did not change — but a SOT-23 land pattern would not have accepted the real component.
 - **The exact meaning of the MCP73831 "AC" option code.** `UNVERIFIED` (partially). The Microchip search summary says AC = precondition 10%, V_PTH/V_REG = 66.5%, I_TERM/I_REG = 7.5%, V_RTH/V_REG = 96.5%; the datasheet's Electrical Characteristics table confirms the ratios (7.5–10–12.5 % / 3.75–5–6.25 %) but the exact decoding of the "AC" letter code must be confirmed by hand from the Product Identification System table.
 
 ---
@@ -333,8 +337,73 @@ Source: SSD1680 datasheet Rev 0.14 — https://www.crystalfontz.com/controllers/
 
 > ⚠️ **For a sink (UFP), EACH of the CC1 and CC2 pins must be pulled to GND separately with 5.1 kΩ.** Joining the two CC pins or connecting them with a single resistor causes errors with smart (E-marked) cables.
 
-- **16-pin, 0.5 mm, bottom-mount example:** XFCN **TPS10-N1F1-2016-A** (A5 = CC1, B5 = CC2; 16 pins in total: GND, VBUS, D+, D−, CC1, CC2, SBU1, SBU2) — source: https://www.xfconn.com/uploads/soft/20240925/4-2409251I415K5.pdf — **`UNVERIFIED`** (official datasheet and stock not confirmed)
+#### J1 — USB-C 16-pin receptacle, HRO TYPE-C-31-M-12
+
+The board's `J1` footprint is KiCad `Connector_USB:USB_C_Receptacle_HRO_TYPE-C-31-M-12`. The contact
+assignment below is the **manufacturer's own pin-assignment table** (drawing "USB TYPE C 母座 16Pin
+R/A 90° SMT", PART NO. TYPE-C-31-M-12, sheet 1 of 4):
+
+| Designator | Signal | Notes |
+|-----------|--------|-------|
+| A1, A12, B1, B12 | GND | Four ground contacts (the two outermost contacts on each side) |
+| A4, A9, B4, B9 | VBUS | Four VBUS contacts — **all four must be connected** |
+| A5 | CC1 | Needs its **own** 5.1 kΩ Rd to GND |
+| B5 | CC2 | Needs its **own** 5.1 kΩ Rd to GND |
+| A6, B6 | D+ | DP1 / DP2 — one USB 2.0 line, duplicated for plug reversal; tie A6–B6 |
+| A7, B7 | D− | DN1 / DN2 — duplicated for plug reversal; tie A7–B7 |
+| A8, B8 | SBU1 / SBU2 | Sideband-use contacts (unused in this design) |
+| S1 (four pads) | SHIELD | Shell / board-retention legs |
+
+Source (table): https://omo-oss-file110.thefastfile.com/portal-saas/pg2026081913505947704/cms/file/type-c-31-m-12&12a&12b&12c(1).pdf (pin-assignment table, sheet 1 of 4) — linked from the manufacturer page https://en.krhro.com/Product-Details/726.html
+
+- **16-contact USB 2.0 subset:** power (GND ×4, VBUS ×4), CC1, CC2, D+ ×2, D− ×2, SBU1, SBU2 — **no SuperSpeed pairs**; a USB 3.x SuperSpeed link would require the full 24-pin part — source: https://en.krhro.com/Product-Details/726.html
+- **Reversible plug:** D+ and D− each appear on **two** contacts (A6/B6 and A7/B7); tie each pair together with short stubs — source: https://omo-oss-file110.thefastfile.com/portal-saas/pg2026081913505947704/cms/file/type-c-31-m-12&12a&12b&12c(1).pdf (sheet 1 of 4)
+- **VBUS and GND are multi-pad groups, not single pads:** the netlist connects **every** member — VBUS = A4, A9, B4, B9; GND = A1, A12, B1, B12 — plus the shell (S1) — source: https://omo-oss-file110.thefastfile.com/portal-saas/pg2026081913505947704/cms/file/type-c-31-m-12&12a&12b&12c(1).pdf (sheet 1 of 4)
+- **Equivalent alternative 16-contact, 0.5 mm, bottom-mount part:** XFCN **TPS10-N1F1-2016-A** (A5 = CC1, B5 = CC2; 16 contacts: GND, VBUS, D+, D−, CC1, CC2, SBU1, SBU2) — source: https://www.xfconn.com/uploads/soft/20240925/4-2409251I415K5.pdf
 - **CC1/CC2 pull-down:** for a UFP/sink **5.1 kΩ, separately on each CC pin, to GND** — source: https://www.hestore.eu/en/prod_10050443.html (USB-C sink reference)
+
+### 5.4 U1 — USBLC6-2SC6 USB ESD protection (SOT23-6L)
+
+Source: ST Microelectronics USBLC6-2 datasheet, Doc ID 11265 Rev 5 —
+https://datasheet.octopart.com/USBLC62SC6-STMicroelectronics-datasheet-10412581.pdf
+
+The part protects **two** data lines plus VBUS. Each protected line is brought out on **two** pins so
+that the ESD current splits between them; that is why I/O1 and I/O2 each appear twice.
+
+| Pin | Name | I/O | Description |
+|----:|----|-----|----------|
+| 1 | I/O1 | I/O | Data line 1 (one half; internally joined to pin 6) |
+| 2 | GND | — | Ground |
+| 3 | I/O2 | I/O | Data line 2 (one half; internally joined to pin 4) |
+| 4 | I/O2 | I/O | Data line 2 (internally joined to pin 3) |
+| 5 | VBUS | — | VBUS (supply) protection |
+| 6 | I/O1 | I/O | Data line 1 (internally joined to pin 1) |
+
+Source (table): https://datasheet.octopart.com/USBLC62SC6-STMicroelectronics-datasheet-10412581.pdf (Figure 1 "Functional diagram (top view)", p.1)
+
+- **How J1's lines map onto U1:** USB_DP goes through **I/O1 (pins 1 and 6)** and USB_DN goes through **I/O2 (pins 3 and 4)**; GND = pin 2, VBUS = pin 5 — source: https://datasheet.octopart.com/USBLC62SC6-STMicroelectronics-datasheet-10412581.pdf (Figure 1, p.1)
+- **Ordering code / marking:** USBLC6-2SC6 = **SOT23-6L**, marking **UL26**, 16.7 mg — source: https://datasheet.octopart.com/USBLC62SC6-STMicroelectronics-datasheet-10412581.pdf (Table 6, Ordering information)
+- **Layout note:** place the device as close as possible to the connector and add a **100 nF** capacitor between VBUS and GND near the device — source: https://datasheet.octopart.com/USBLC62SC6-STMicroelectronics-datasheet-10412581.pdf (application information)
+
+### 5.5 Q2 — Si1308EDL N-channel MOSFET (panel boost, drives GDR)
+
+Source: Vishay Siliconix Si1308EDL datasheet, Document Number 63399, Rev. C —
+https://www.vishay.com/docs/63399/si1308edl.pdf
+
+| Pin | Name | I/O | Description |
+|----:|----|-----|----------|
+| 1 | G | I | Gate |
+| 2 | S | I/O | Source (also the body-diode anode side) |
+| 3 | D | I/O | Drain |
+
+Source (table): https://www.vishay.com/docs/63399/si1308edl.pdf (page-1 pin diagram, "Top View", document 63399 Rev. C, 06-Oct-14)
+
+> ⚠️ **Package discrepancy.** The genuine Vishay **Si1308EDL** is **SOT-323 / SC-70 (3 leads)**, not SOT-23 —
+> source: https://www.vishay.com/docs/63399/si1308edl.pdf (page 1, "SOT-323 / SC-70 (3 leads)"; marking **KG**;
+> ordering code **Si1308EDL-T1-GE3**). The design's footprint is now `Package_TO_SOT_SMD:SOT-323_SC-70`.
+> The pin **numbers** are the same in either package (1 = G, 2 = S, 3 = D), but a genuine Vishay part will
+> **not** fit the SOT-23 footprint — switch the footprint to `Package_TO_SOT_SMD:SOT-323_SC-70` (or pick a
+> SOT-23 second source deliberately).
 
 ---
 

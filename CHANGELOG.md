@@ -89,11 +89,11 @@ physical hardware.**
 
 ### Fixed (errors found during verification)
 
-**Fifteen errors** were found and fixed before this release was published —
+**Sixteen errors** were found and fixed before this release was published —
 none of them on real hardware, all of them by pointing documentation,
 arithmetic and cross-checks at the design. They fall into three groups.
 
-#### 1. Datasheet and design errors (6)
+#### 1. Datasheet and design errors (7)
 
 Found by reading the official datasheets against assumptions that had never
 been checked:
@@ -106,6 +106,7 @@ been checked:
 | 4 | GPIO8 strapping | Must be HIGH at boot | **Free during SPI boot** (Table 4-3) |
 | 5 | Panel supply | 3.3 V + capacitor only | **Also needs an external ±15 V boost** (GDR/RESE pins) |
 | 6 | Panel BUSY polarity | HIGH = idle | Datasheet **HIGH = busy** — made configurable, a timeout added |
+| 7 | `Q2` footprint | A **SOT-23** land pattern | The real Vishay **Si1308EDL is SOT-323/SC-70 (3 leads)**, not SOT-23 — the land pattern would not have accepted the component. Datasheet 63399 Rev C, page 1. The pin numbers were identical either way, so the netlist never changed; only the footprint did |
 
 #### 2. Geometry and mechanical errors (4)
 
@@ -114,10 +115,10 @@ mounting hole, or does not fit inside its own case, is invisible in a schematic:
 
 | # | Finding | Symptom it would have caused | Fix |
 |---|---|---|---|
-| 7 | Body dimension | The case was 58 × 30 mm; the panel **glass is 59.2 × 29.2 mm** and cannot be assembled into it | **62 × 32 mm**, derived from the glass: glass + 2 × 1.4 mm bezel |
-| 8 | FPC passage on the wrong case edge | The case cut the ribbon channel into the −Y edge while J2 sits on the PCB's +Y edge, so the FPC had to wrap the whole board | Channel moved to +Y. Caught by the drawing generator's geometry check |
-| 9 | Mounting holes vs courtyards | The four M1.6 mounting holes overlapped the courtyards of `BT1`, `SW4`, `R13` and `R15` | The four hole zones are now reserved keep-out regions in `gen_placement.py`, and the placer refuses to put anything there |
-| 10 | Buttons did not fit | Three 5 mm buttons cannot fit in the 15 mm of edge left between two mounting holes | Buttons reduced to 4.5 mm and re-spaced |
+| 8 | Body dimension | The case was 58 × 30 mm; the panel **glass is 59.2 × 29.2 mm** and cannot be assembled into it | **62 × 32 mm**, derived from the glass: glass + 2 × 1.4 mm bezel |
+| 9 | FPC passage on the wrong case edge | The case cut the ribbon channel into the −Y edge while J2 sits on the PCB's +Y edge, so the FPC had to wrap the whole board | Channel moved to +Y. Caught by the drawing generator's geometry check |
+| 10 | Mounting holes vs courtyards | The four M1.6 mounting holes overlapped the courtyards of `BT1`, `SW4`, `R13` and `R15` | The four hole zones are now reserved keep-out regions in `gen_placement.py`, and the placer refuses to put anything there |
+| 11 | Buttons did not fit | Three 5 mm buttons cannot fit in the 15 mm of edge left between two mounting holes | Buttons reduced to 4.5 mm and re-spaced |
 
 #### 3. Software and integration errors (2)
 
@@ -126,8 +127,8 @@ the device boots, nothing crashes, but the result would have been broken:
 
 | # | Finding | Symptom | Fix |
 |---|---|---|---|
-| 11 | The `.epr` converter was deleting every paragraph end (`0x0A`) | **Every converted book** appeared as a single long paragraph; only the chapter ends remained | The unconditional `_trim_trailing_breaks()` call inside `TextBuilder.add_block` was restricted to run only at chapter openings. 6 new regression tests were added |
-| 12 | In the `.epf` font, the reference point of the `top` field differed on the two sides | The firmware thought `top` was measured from the baseline; the error **varied per glyph**, so the text was scattered vertically (`.` 13 px up, `A` 9 px down) | `y0 = baseline_y - (ascent - top) * scale`. The `font.h` comments were clarified; `tools/tests/test_epf_interop.py` verifies with boundary widths (9/12/13/17 px) that both sides apply the same rule |
+| 12 | The `.epr` converter was deleting every paragraph end (`0x0A`) | **Every converted book** appeared as a single long paragraph; only the chapter ends remained | The unconditional `_trim_trailing_breaks()` call inside `TextBuilder.add_block` was restricted to run only at chapter openings. 6 new regression tests were added |
+| 13 | In the `.epf` font, the reference point of the `top` field differed on the two sides | The firmware thought `top` was measured from the baseline; the error **varied per glyph**, so the text was scattered vertically (`.` 13 px up, `A` 9 px down) | `y0 = baseline_y - (ascent - top) * scale`. The `font.h` comments were clarified; `tools/tests/test_epf_interop.py` verifies with boundary widths (9/12/13/17 px) that both sides apply the same rule |
 
 Error 12 arose from two different agents writing the two halves of the same
 binary format — which is why `test_epf_interop.py` now parses the firmware source
@@ -142,9 +143,9 @@ the state they were hiding in.
 
 | # | Finding | What it did | Fix |
 |---|---|---|---|
-| 13 | `BTN_UP`, `BTN_DOWN` and `BTN_MENU` were defined **twice**: as pin macros in `config.h` and as enum members in `buttons.h` | The preprocessor rewrote the enum members into numbers, so the enum did not parse and `buttons.cpp` did not compile at all | Pins keep the `BTN_` prefix; the button events are now `EV_UP` / `EV_DOWN` / `EV_MENU` / `EV_ANY_WAKE`. Two naming spaces, because they are two different things |
-| 14 | The whole deep-sleep wake path was written against the **ESP32-classic ext1 API** | `SOC_PM_SUPPORT_EXT_WAKEUP` is undefined for the ESP32-C3, so `esp_sleep_enable_ext1_wakeup()`, `esp_sleep_get_ext1_wakeup_status()` and `ESP_SLEEP_WAKEUP_EXT1` are all absent. The C3 wakes through a separate GPIO deep-sleep block with its own entry points and its own wakeup cause | Switched to `esp_deep_sleep_enable_gpio_wakeup()`, `esp_sleep_get_gpio_wakeup_status()` and `ESP_SLEEP_WAKEUP_GPIO`. The `ESP_EXT1_WAKEUP_ANY_LOW` compatibility shim was deleted — it was papering over a naming difference on an API this chip never had |
-| 15 | `docs/04` told easy-build readers that **external pull-ups were not needed** | IDF's GPIO wakeup does arm internal pull resistors, but its own note *strongly recommends* external ones for a low-level wakeup, and warns that internal and external together interfere. The failure mode is the unpleasant one: the device wakes intermittently | The three 100 kΩ resistors are now a required line in the easy build's bill of materials, with the failure mode stated plainly |
+| 14 | `BTN_UP`, `BTN_DOWN` and `BTN_MENU` were defined **twice**: as pin macros in `config.h` and as enum members in `buttons.h` | The preprocessor rewrote the enum members into numbers, so the enum did not parse and `buttons.cpp` did not compile at all | Pins keep the `BTN_` prefix; the button events are now `EV_UP` / `EV_DOWN` / `EV_MENU` / `EV_ANY_WAKE`. Two naming spaces, because they are two different things |
+| 15 | The whole deep-sleep wake path was written against the **ESP32-classic ext1 API** | `SOC_PM_SUPPORT_EXT_WAKEUP` is undefined for the ESP32-C3, so `esp_sleep_enable_ext1_wakeup()`, `esp_sleep_get_ext1_wakeup_status()` and `ESP_SLEEP_WAKEUP_EXT1` are all absent. The C3 wakes through a separate GPIO deep-sleep block with its own entry points and its own wakeup cause | Switched to `esp_deep_sleep_enable_gpio_wakeup()`, `esp_sleep_get_gpio_wakeup_status()` and `ESP_SLEEP_WAKEUP_GPIO`. The `ESP_EXT1_WAKEUP_ANY_LOW` compatibility shim was deleted — it was papering over a naming difference on an API this chip never had |
+| 16 | `docs/04` told easy-build readers that **external pull-ups were not needed** | IDF's GPIO wakeup does arm internal pull resistors, but its own note *strongly recommends* external ones for a low-level wakeup, and warns that internal and external together interfere. The failure mode is the unpleasant one: the device wakes intermittently | The three 100 kΩ resistors are now a required line in the easy build's bill of materials, with the failure mode stated plainly |
 
 The power budget calculation was also fixed: the first design said
 "1,300,000 pages per page turn"; the correct one is a realistic model in which
