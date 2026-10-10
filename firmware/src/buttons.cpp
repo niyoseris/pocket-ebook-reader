@@ -56,7 +56,7 @@ ButtonEvent buttonsWakeEvent(uint8_t* held_mask) {
     if (held_mask) *held_mask = 0;
 
     const esp_sleep_wakeup_cause_t cause = esp_sleep_get_wakeup_cause();
-    if (cause != ESP_SLEEP_WAKEUP_EXT1 && cause != ESP_SLEEP_WAKEUP_TIMER) {
+    if (cause != ESP_SLEEP_WAKEUP_GPIO && cause != ESP_SLEEP_WAKEUP_TIMER) {
         return EV_NONE;                 /* ordinary power-on reset */
     }
 

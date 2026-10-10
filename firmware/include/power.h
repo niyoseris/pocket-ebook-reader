@@ -48,7 +48,8 @@ uint16_t batteryMilliVolts();   /* millivolts, e.g. 3870 */
 uint8_t  batteryPercent();      /* 0..100 */
 bool     batteryIsLow();        /* below BATTERY_LOW_MV */
 
-/* Which buttons caused the wake-up (BTN_MASK_* bits); 0 if not an ext1 wake. */
+/* Which buttons caused the wake-up (BTN_MASK_* bits); 0 if the wake was not
+ * a button wake. On this part the cause is ESP_SLEEP_WAKEUP_GPIO, not ext1. */
 uint8_t  powerWakeMask();
 uint32_t powerUptimeSeconds();
 

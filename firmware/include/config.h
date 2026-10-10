@@ -60,7 +60,7 @@
  *
  *  -------------------------------------------------------------------------
  *  DEEP SLEEP WAKE: only BTN_UP (GPIO3) and BTN_DOWN (GPIO2) live in the RTC
- *  domain on this board and can wake the chip through ext1. BTN_MENU (GPIO20)
+ *  domain on this board and can wake the chip from deep sleep. BTN_MENU (GPIO20)
  *  is U0RXD, a normal digital pin -- it CANNOT wake the device. After the
  *  device sleeps, press UP or DOWN to wake it and then use MENU. The wake mask
  *  is exactly two pins: (1<<2)|(1<<3) -- there is no third wake source.
@@ -102,7 +102,11 @@
 /* ------------------------------------------------------------------ */
 #define VBAT_ADC    5
 
-/* ext1 deep-sleep wake mask: GPIO2 + GPIO3 only (see notes above). */
+/* Deep-sleep wake mask: GPIO2 + GPIO3 only (see the notes above).
+ *
+ * NOTE: this is NOT the ESP32-classic ext1 mask. The ESP32-C3 has no
+ * SOC_PM_SUPPORT_EXT_WAKEUP, so esp_sleep_enable_ext1_wakeup() does not exist
+ * here; the mask goes to esp_deep_sleep_enable_gpio_wakeup() instead. */
 #define BTN_WAKE_MASK   ((1ULL << BTN_DOWN) | (1ULL << BTN_UP))
 
 /* ------------------------------------------------------------------ */

@@ -62,20 +62,30 @@ One leg of each button to a GPIO, the other to GND:
 | `SW3` | `D0` | 2 | Page forward |
 | `SW4` | `D7` | 20 | Menu / library |
 
-**You must fit external pull-ups — this is not optional.** Add a 100 kΩ resistor
-from each button's GPIO to 3V3 (three resistors). A 100 nF capacitor from the
-GPIO to GND is optional here but recommended, for the same reason the PCB has it.
+**Fit external pull-ups — three 100 kΩ resistors, one from each button GPIO to
+3V3.** A 100 nF capacitor from each GPIO to GND is optional here but
+recommended, for the same reason the PCB has it.
 
-The reason is a hardware limitation of the chip, not a preference: **ESP32-C3 has
-no RTCIO subsystem** (`SOC_RTCIO_PIN_COUNT` is 0), and ESP-IDF declares no
-`gpio_sleep_*` API for it either. There is therefore no way for the firmware to
-hold an internal pull-up while the chip is in deep sleep — `rtc_gpio_pullup_en()`
-does not exist on this part. The digital pull that `INPUT_PULLUP` configures is
-powered down with the rest of the digital domain, so in sleep the button pin
-would float. A floating wake pin means the device wakes unreliably, or not at
-all, and the symptom is intermittent — the worst kind to debug.
+The reason is a property of the chip, not a preference. **ESP32-C3 has no RTCIO
+subsystem** (`SOC_RTCIO_PIN_COUNT` is 0) and ESP-IDF declares no `gpio_sleep_*`
+API for it, so `rtc_gpio_pullup_en()` — the way an ESP32 arms an RTC pull-up
+before sleeping — does not exist on this part. The C3 wakes from deep sleep
+through its GPIO block instead (`esp_deep_sleep_enable_gpio_wakeup`), and that
+block *does* enable internal pull resistors by default, so a device with nothing
+but `INPUT_PULLUP` will usually still wake.
 
-The PCB build has the 100 kΩ + 100 nF for exactly the same reason, and the
+"Usually" is not good enough here. ESP-IDF's own note on that function says
+external resistors are **strongly recommended** for a low-level wakeup, because
+the internal ones are only armed at the moment `esp_deep_sleep_start()` runs.
+It also warns that internal and external resistors together interfere, so if you
+fit the 100 kΩ parts you may want to switch the internal ones off
+(`CONFIG_ESP_SLEEP_GPIO_ENABLE_INTERNAL_RESISTORS`).
+
+The failure mode if you skip them is the unpleasant one: the device wakes
+*intermittently*. Sometimes every press works, sometimes one in ten does
+nothing, and there is nothing in the log to look at because the chip is asleep.
+
+The PCB build carries the 100 kΩ + 100 nF for the same reason, and there the
 capacitor additionally cleans the line at the instant of waking, before the
 software debounce is running.
 

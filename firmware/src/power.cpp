@@ -9,16 +9,6 @@
 #include "driver/rtc_io.h"
 #include "esp_sleep.h"
 
-/* ext1 wake mode naming across IDF versions:
- *   IDF 4.x calls mode 0 ESP_EXT1_WAKEUP_ALL_LOW
- *   IDF 5.x renamed it      ESP_EXT1_WAKEUP_ANY_LOW
- * On the ESP32-C3 the ext1 hardware only implements "wake when any of the
- * selected pins goes low", so the register value (0) and the behaviour are
- * identical -- the rename is cosmetic for this chip. Kept as an alias so the
- * call site reads ESP_EXT1_WAKEUP_ANY_LOW on both cores. */
-#ifndef ESP_EXT1_WAKEUP_ANY_LOW
-  #define ESP_EXT1_WAKEUP_ANY_LOW ESP_EXT1_WAKEUP_ALL_LOW
-#endif
 
 /* RTC_DATA_ATTR: zero-initialised on power-on reset, preserved across deep
  * sleep. The initialiser is only applied on a cold boot, which is exactly the
@@ -123,9 +113,9 @@ bool batteryIsLow() {
 }
 
 uint8_t powerWakeMask() {
-    if (esp_sleep_get_wakeup_cause() != ESP_SLEEP_WAKEUP_EXT1) return 0;
+    if (esp_sleep_get_wakeup_cause() != ESP_SLEEP_WAKEUP_GPIO) return 0;
 
-    const uint64_t status = esp_sleep_get_ext1_wakeup_status();
+    const uint64_t status = esp_sleep_get_gpio_wakeup_status();
     uint8_t mask = 0;
     if (status & (1ULL << BTN_UP))   mask |= BTN_MASK_UP;
     if (status & (1ULL << BTN_DOWN)) mask |= BTN_MASK_DOWN;
@@ -165,29 +155,22 @@ void enterDeepSleep(uint64_t wake_mask) {
         Serial.println("[power] low battery -> timer wake only (button wake disabled)");
         esp_sleep_enable_timer_wakeup(LOW_RETRY_US);
     } else {
-        /* esp_sleep_enable_ext1_wakeup() is the current IDF name for the
-         * function the vendor examples call esp_deep_sleep_enable_ext1_wakeup()
-         * -- same signature, same mask, no deprecation warning on IDF 5.x.
-         * Mask = GPIO2 | GPIO3 (UP/DOWN), active LOW.
+        /* Mask = GPIO2 | GPIO3 (UP/DOWN), wake when either goes LOW.
          *
-         * IMPORTANT -- ESP32-C3 has no RTCIO subsystem (SOC_RTCIO_PIN_COUNT is
-         * 0) and IDF declares no gpio_sleep_* API for it, so rtc_gpio_pullup_en()
-         * does not exist on this chip and the chip CANNOT hold an internal
-         * pull-up while it is in deep sleep. The wake pin has to be held at its
-         * inactive level by an EXTERNAL resistor -- that is exactly why the
-         * schematic puts 100k to 3V3 on all three buttons. Without them the pin
-         * floats in sleep and the device wakes unreliably. See docs/04.
+         * NOT ext1. The ESP32-classic ext1 wakeup does not exist on this part:
+         * SOC_PM_SUPPORT_EXT_WAKEUP is undefined for the ESP32-C3, so
+         * esp_sleep_enable_ext1_wakeup() and esp_sleep_get_ext1_wakeup_status()
+         * are not declared for it. The C3 wakes through its GPIO deep-sleep
+         * block (SOC_GPIO_SUPPORT_DEEPSLEEP_WAKEUP) instead, and that block has
+         * its own API and its own wakeup cause (ESP_SLEEP_WAKEUP_GPIO).
          *
-         * All we can do here is arm the digital pull for the awake period. */
-        if (wake_mask & (1ULL << BTN_UP)) {
-            gpio_pullup_en((gpio_num_t)BTN_UP);
-            gpio_pulldown_dis((gpio_num_t)BTN_UP);
-        }
-        if (wake_mask & (1ULL << BTN_DOWN)) {
-            gpio_pullup_en((gpio_num_t)BTN_DOWN);
-            gpio_pulldown_dis((gpio_num_t)BTN_DOWN);
-        }
-        esp_sleep_enable_ext1_wakeup(wake_mask, ESP_EXT1_WAKEUP_ANY_LOW);
+         * Pull-ups: IDF enables internal pull resistors for the wake pins by
+         * default (CONFIG_ESP_SLEEP_GPIO_ENABLE_INTERNAL_RESISTORS), so we do
+         * not arm them by hand here. Its own documentation still "strongly
+         * recommends" external resistors for a low-level wakeup, because the
+         * internal ones are only guaranteed once esp_deep_sleep_start() runs,
+         * and this board has 100k to 3V3 on all three buttons. See docs/04. */
+        esp_deep_sleep_enable_gpio_wakeup(wake_mask, ESP_GPIO_WAKEUP_GPIO_LOW);
     }
 
     delay(20);
